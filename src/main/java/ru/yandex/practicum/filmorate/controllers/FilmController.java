@@ -9,42 +9,41 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    HashMap<Integer, Film> films = new HashMap<>();
+    private final IdGenerator idGenerator;
 
-    //POST
+    public FilmController(IdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
+    }
+
+    private Map<Integer, Film> films = new HashMap<>();
+
     @PostMapping
-    public Film createFilm(@RequestBody @Valid Film film){
-film.setId(new IdGenerator().generateFilmId());
-films.put(film.getId(),film);
-log.info("Фильм с id: {} добавлен в коллекцию", film.getId());
+    public Film create(@RequestBody @Valid Film film) {
+        film.setId(idGenerator.generateId());
+        films.put(film.getId(), film);
+        log.info("Фильм с id: {} добавлен в коллекцию", film.getId());
         return film;
     }
 
-    //PUT
     @PutMapping
-    public Film updateFilm (@RequestBody @Valid Film film) {
+    public Film update(@RequestBody @Valid Film film) {
         if (films.containsKey(film.getId())) {
             films.replace(film.getId(), film);
             log.info("Фильм с id: {} обновлён", film.getId());
         } else {
             throw new ValidException("Невозможно обновить фильм, запись отсутствует");
-//            films.put(film.getId(), film);
-//            log.info("Фильм с id: {} добавлен в коллекцию", film.getId());
         }
         return film;
     }
 
-    //GET
-//    public  HashMap<Integer, Film> returnFilmsList (){
-//        return films;
-//    }
-@GetMapping
-    public List<Film> getAllFilms(){
+    @GetMapping
+    public List<Film> getAll() {
         return new ArrayList<>(films.values());
     }
 }

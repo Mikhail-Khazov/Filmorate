@@ -8,25 +8,29 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest(classes = FilmorateApplication.class)
 public class FilmControllerTest {
-    FilmController filmController;
-    Film failureValidationFilm;
-    Film goodValidationFilm;
-    Validator validator;
+    @Autowired
+    private FilmController filmController;
+    private Film failureValidationFilm;
+    private Film goodValidationFilm;
+    private Validator validator;
 
 
     @BeforeEach
     void createContext() {
-        filmController = new FilmController();
+
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
@@ -46,8 +50,8 @@ public class FilmControllerTest {
                 .name("Test Name")
                 .build();
 
-        filmController.createFilm(failureValidationFilm);
-        filmController.createFilm(goodValidationFilm);
+        filmController.create(failureValidationFilm);
+        filmController.create(goodValidationFilm);
     }
 
     @Test

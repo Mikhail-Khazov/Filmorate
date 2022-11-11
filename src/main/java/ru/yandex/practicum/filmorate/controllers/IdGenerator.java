@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope("prototype")
 public class IdGenerator {
-    private static int userIdCounter;
-    private static int filmIdCounter;
+    private int IdCounter;
 
-    public int generateUserId() {
-        return ++userIdCounter;
-    }
-
-    public int generateFilmId() {
-        return ++filmIdCounter;
+    public int generateId() {
+        return ++IdCounter;
     }
 }

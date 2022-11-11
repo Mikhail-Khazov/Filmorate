@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
@@ -14,6 +12,7 @@ import java.time.LocalDate;
 public class User {
     private int id;
 
+    @NotNull
     @Email(message = "Некорректный email")
     private final String email;
 
@@ -22,7 +21,7 @@ public class User {
 
     private String name;
 
-    @Past(message = "Некорректно указана дата рождения")
+    @PastOrPresent(message = "Некорректно указана дата рождения")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate birthday;
 

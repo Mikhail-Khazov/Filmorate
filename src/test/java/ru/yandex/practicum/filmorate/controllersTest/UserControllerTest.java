@@ -2,6 +2,9 @@ package ru.yandex.practicum.filmorate.controllersTest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -14,7 +17,9 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest(classes = FilmorateApplication.class)
 public class UserControllerTest {
+    @Autowired
     UserController userController;
     User failureValidationUser;
     User goodValidationUser;
@@ -22,7 +27,6 @@ public class UserControllerTest {
 
     @BeforeEach
     void createContext() {
-        userController = new UserController();
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
@@ -40,20 +44,21 @@ public class UserControllerTest {
                 .birthday(LocalDate.parse("1998-12-26"))
                 .build();
 
-        userController.createUser(failureValidationUser);
-        userController.createUser(goodValidationUser);
+        userController.create(failureValidationUser);
+        userController.create(goodValidationUser);
     }
 
     @Test
-    void emailMustBeValid(){
+    void emailMustBeValid() {
         Set<ConstraintViolation<User>> violations = validator.validate(failureValidationUser);
         Set<ConstraintViolation<User>> withoutViolations = validator.validate(goodValidationUser);
 
         assertTrue(withoutViolations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Некорректный email")));
     }
+
     @Test
-    void loginShouldNotBeBlank(){
+    void loginShouldNotBeBlank() {
         Set<ConstraintViolation<User>> violations = validator.validate(failureValidationUser);
         Set<ConstraintViolation<User>> withoutViolations = validator.validate(goodValidationUser);
 
@@ -62,7 +67,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void birthdayShouldBeInPast(){
+    void birthdayShouldBeInPast() {
         Set<ConstraintViolation<User>> violations = validator.validate(failureValidationUser);
         Set<ConstraintViolation<User>> withoutViolations = validator.validate(goodValidationUser);
 
