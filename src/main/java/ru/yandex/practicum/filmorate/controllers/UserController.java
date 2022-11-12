@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.ValidException;
@@ -14,12 +15,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    IdGenerator idGenerator;
+   private final IdGenerator idGenerator;
 
-    public UserController(IdGenerator idGenerator) {
-        this.idGenerator = idGenerator;
-    }
+//    public UserController(IdGenerator idGenerator) {
+//        this.idGenerator = idGenerator;
+//    }
 
     private Map<Integer, User> users = new HashMap<>();
 
