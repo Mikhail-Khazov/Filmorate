@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class IdGenerator {
     private int IdCounter;
-
     public int generateId() {
         return ++IdCounter;
     }

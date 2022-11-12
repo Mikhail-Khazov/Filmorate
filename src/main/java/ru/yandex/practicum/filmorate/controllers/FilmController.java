@@ -18,11 +18,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FilmController {
     private final IdGenerator idGenerator;
-
-  //  public FilmController(IdGenerator idGenerator) {
-//        this.idGenerator = idGenerator;
-//    }
-
     private Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping

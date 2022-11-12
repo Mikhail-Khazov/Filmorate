@@ -18,11 +18,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
    private final IdGenerator idGenerator;
-
-//    public UserController(IdGenerator idGenerator) {
-//        this.idGenerator = idGenerator;
-//    }
-
     private Map<Integer, User> users = new HashMap<>();
 
     @PostMapping
