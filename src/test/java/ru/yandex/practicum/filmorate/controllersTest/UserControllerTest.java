@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(classes = FilmorateApplication.class)
 public class UserControllerTest {
     @Autowired
-    UserController userController;
+    InMemoryUserStorage userController;
     User failureValidationUser;
     User goodValidationUser;
     Validator validator;
@@ -30,19 +31,18 @@ public class UserControllerTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        failureValidationUser = User.builder()
-                .email("@mail.su")
-                .login("   ")
-                .name("Name")
-                .birthday(LocalDate.now().plusMonths(1))
-                .build();
+        failureValidationUser = new User(
+                "@mail.su",
+                "   ",
 
-        goodValidationUser = User.builder()
-                .email("test@mail.su")
-                .login("Login")
-                .name("")
-                .birthday(LocalDate.parse("1998-12-26"))
-                .build();
+                LocalDate.now().plusMonths(1));
+
+
+        goodValidationUser = new User(
+                "test@mail.su",
+                "Login",
+                LocalDate.parse("1998-12-26")
+                );
 
         userController.create(failureValidationUser);
         userController.create(goodValidationUser);

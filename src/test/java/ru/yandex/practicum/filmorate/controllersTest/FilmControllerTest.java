@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -22,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(classes = FilmorateApplication.class)
 public class FilmControllerTest {
     @Autowired
-    private FilmController filmController;
+    private InMemoryFilmStorage filmController;
     private Film failureValidationFilm;
     private Film goodValidationFilm;
     private Validator validator;
@@ -34,21 +36,14 @@ public class FilmControllerTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        failureValidationFilm = Film.builder()
-                .releaseDate(LocalDate.of(1800, 11, 22))
-                .description("Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
-                        "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
-                        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip")
-                .duration(-4560)
-                .name("   ")
-                .build();
+        failureValidationFilm = new Film("   ",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
+                "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
+                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip",
+                LocalDate.of(1800, 11, 22), -4560);
 
-        goodValidationFilm = Film.builder()
-                .releaseDate(LocalDate.of(2000, 11, 22))
-                .description("Test description")
-                .duration(4560)
-                .name("Test Name")
-                .build();
+        goodValidationFilm = new Film("Test Name", "Test Description",
+                LocalDate.of(2000, 11, 22), 4560);
 
         filmController.create(failureValidationFilm);
         filmController.create(goodValidationFilm);
