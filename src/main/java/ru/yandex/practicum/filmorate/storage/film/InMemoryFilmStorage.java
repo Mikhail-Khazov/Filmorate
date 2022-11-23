@@ -1,27 +1,19 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.controllers.IdGenerator;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Repository
 @Slf4j
 @RequiredArgsConstructor
-@Getter
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
 
     private final IdGenerator idGenerator;
     private Map<Integer, Film> films = new HashMap<>();
@@ -46,16 +38,19 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
-    public Film get (int filmId){
-        if (null != films.get(filmId)) {
-            log.info("Получен фильм c id: {}", filmId);
-            return films.get(filmId);
-        }
-        else throw new FilmNotFoundException("Фильм с id: " + filmId + ", не найден");
+    public Optional<Film> get(int filmId) {
+        return Optional.ofNullable(films.get(filmId));
     }
 
     @Override
     public List<Film> getAll() {
         return new ArrayList<>(films.values());
+    }
+
+    @Override
+    public List<Film> getTopFilms(int count) {
+        return films.values().stream().sorted((f0, f1) -> {
+            return f1.getLiked().size() - f0.getLiked().size();
+        }).limit(count).collect(Collectors.toList());
     }
 }

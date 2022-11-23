@@ -2,15 +2,15 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.controllers.IdGenerator;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.ValidException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Repository
 @Slf4j
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
@@ -19,18 +19,13 @@ public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public User get(int userId) {
-        if (null != users.get(userId)) {
-            log.info("Получен пользователь id: {}", userId);
-            return users.get(userId);
-        } else throw new UserNotFoundException("Пользователь с id: " + userId + ", не найден");
+    public Optional<User> get(int userId) {
+        return Optional.ofNullable(users.get(userId));
     }
 
     @Override
     public User create(User user) {
-        nameCheck(user);
         user.setId(idGenerator.generateId());
-//        user.setFriends(new HashSet<>());
         users.put(user.getId(), user);
         log.info("Создание нового пользователя с id: {}", user.getId());
         return user;
@@ -38,7 +33,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        nameCheck(user);
         if (users.containsKey(user.getId())) {
             users.replace(user.getId(), user);
             log.info("Пользователь с id: {} обновлён", user.getId());
@@ -51,9 +45,16 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
-    private void nameCheck(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+    @Override
+    public List<User> commonFriends(int userId, int friendId) {
+        User user = users.get(userId);
+        User friend = users.get(friendId);
+        return user.getFriends().stream().filter(u -> friend.getFriends().contains(u)).map(u -> users.get(u)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> getFriends(int userId) {
+        User user = users.get(userId);
+        return user.getFriends().stream().map(u -> users.get(u)).collect(Collectors.toList());
     }
 }

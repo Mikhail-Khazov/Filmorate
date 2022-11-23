@@ -1,21 +1,22 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FilmService {
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final UserService userService;
 
     public Film create(Film film) {
         return filmStorage.create(film);
@@ -26,7 +27,11 @@ public class FilmService {
     }
 
     public Film get(int filmId) {
-        return filmStorage.get(filmId);
+        Film film = filmStorage.get(filmId).orElseThrow(
+                () -> new FilmNotFoundException("Фильм с id: " + filmId + ", не найден")
+        );
+        log.info("Получен фильм c id: {}", filmId);
+        return film;
     }
 
     public List<Film> getAll() {
@@ -34,22 +39,18 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
-        Film film = filmStorage.get(filmId);
-        User user = userStorage.get(userId);
+        Film film = get(filmId);
+        User user = userService.get(userId);
         film.getLiked().add(user.getId());
     }
 
     public void deleteLike(int filmId, int userId) {
-        Film film = filmStorage.get(filmId);
-        User user = userStorage.get(userId);
+        Film film = get(filmId);
+        User user = userService.get(userId);
         film.getLiked().remove(user.getId());
     }
 
     public List<Film> getTopFilms(int count) {
-        return filmStorage.getAll().stream().sorted((f0, f1) -> {
-            return f1.getLiked().size() - f0.getLiked().size();
-        }).limit(count).collect(Collectors.toList());
+        return filmStorage.getTopFilms(count);
     }
-
-
 }
