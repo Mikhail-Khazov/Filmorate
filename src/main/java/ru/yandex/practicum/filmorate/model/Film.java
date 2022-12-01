@@ -35,6 +35,12 @@ public class Film {
     @Min(value = 0, message = "Продолжительность не должна быть отрицательной")
     private final long duration;
 
+    @NotNull
+    private final MPAAFilmRating rating;
+
+    @NotNull
+    private final Set<FilmGenre> genre;
+
 }
 
 
