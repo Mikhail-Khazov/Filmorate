@@ -1,6 +1,6 @@
 # java-filmorate
 Template repository for Filmorate project.
-![diagram](https://user-images.githubusercontent.com/105507007/205176235-884077d8-68fd-410f-9697-e9659ced57f1.png)
+![diagram](https://github.com/Mikhail-Khazov/java-filmorate/blob/add-database/diagram.png?raw=true)
 
 Извлечение названий фильмов определённого жанра:
 ```
