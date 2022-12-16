@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -38,18 +39,13 @@ public class FilmController {
         return filmService.getAll();
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable int id, @PathVariable int userId) {
-        filmService.addLike(id, userId);
-    }
-
-    @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
-        filmService.deleteLike(id, userId);
-    }
-
     @GetMapping("/popular")
     public List<Film> getTopFilms(@RequestParam(defaultValue = "10") @Positive int count) {
         return filmService.getTopFilms(count);
+    }
+
+    @GetMapping("/{filmId}/mpa")
+    public MPAAFilmRating getRating(@PathVariable int filmId) {
+        return filmService.getRating(filmId);
     }
 }
