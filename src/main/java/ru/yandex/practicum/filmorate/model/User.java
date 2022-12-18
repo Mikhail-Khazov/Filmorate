@@ -16,7 +16,7 @@ public class User {
 
     private int id;
 
-    @NotNull
+    @NotBlank
     @Email(message = "Некорректный email")
     private String email;
 

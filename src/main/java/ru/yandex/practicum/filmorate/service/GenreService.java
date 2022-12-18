@@ -32,7 +32,7 @@ public class GenreService {
         return genreStorage.create(genre);
     }
 
-    public List<Film> setGenres (List<Film> films) {
-        return genreStorage.setGenres(films);
+    public void setGenres(List<Film> films) {
+        genreStorage.setGenres(films);
     }
 }

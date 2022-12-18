@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.validators.After;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -43,6 +44,7 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
+        this.genres = new HashSet<>();
     }
 
     public void addGenre(FilmGenre genre) {

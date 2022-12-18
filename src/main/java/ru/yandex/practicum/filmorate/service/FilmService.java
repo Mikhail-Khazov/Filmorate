@@ -31,15 +31,20 @@ public class FilmService {
                 () -> new FilmNotFoundException("Фильм с id: " + filmId + ", не найден")
         );
         log.info("Получен фильм c id: {}", filmId);
-        return genreService.setGenres(List.of(film)).get(0);
+        genreService.setGenres(List.of(film));
+        return film;
     }
 
     public List<Film> getAll() {
-        return genreService.setGenres(filmStorage.getAll());
+        List<Film> allFilms = filmStorage.getAll();
+        genreService.setGenres(allFilms);
+        return allFilms;
     }
 
     public List<Film> getTopFilms(int count) {
-        return genreService.setGenres(filmStorage.getTopFilms(count));
+        List<Film> topFilms = filmStorage.getTopFilms(count);
+        genreService.setGenres(topFilms);
+        return topFilms;
     }
 
     public MPAAFilmRating getRating(int filmId) {

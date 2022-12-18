@@ -45,21 +45,19 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public List<Film> setGenres(List<Film> films) {
+    public void setGenres(List<Film> films) {
         String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
-        films.forEach(film -> film.setGenres(new HashSet<>()));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 
         jdbcTemplate.query(
                 String.format("SELECT fg.FILM_ID, fg.GENRE_ID, gn.TITLE " +
                         "FROM film_Genre AS fg " +
                         "LEFT JOIN genres AS gn ON fg.GENRE_ID = gn.GENRE_ID " +
-                        "WHERE fg.FILM_ID IN (%s)", inSql)
-                , (rs) -> {
+                        "WHERE fg.FILM_ID IN (%s)", inSql),
+                (rs) -> {
                     final Film film = filmById.get(rs.getInt("FILM_ID"));
-                    film.addGenre(FilmGenre.builder().id(rs.getInt("GENRE_ID")).name(rs.getString("TITLE")).build());
-                }, films.stream().map(Film::getId).toArray());
-
-        return new ArrayList<>(filmById.values());
+                    film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
+                    },
+                films.stream().map(Film::getId).toArray());
     }
 }

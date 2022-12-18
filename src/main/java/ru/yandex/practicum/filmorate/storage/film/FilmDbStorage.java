@@ -55,6 +55,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId()
         );
+        deleteAllGenres(film.getId());
         writeGenreToDB(film);
         return updatedRowCount;
     }
@@ -88,7 +89,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void writeGenreToDB(Film film) {
-        deleteAllGenres(film.getId());
         if (null == film.getGenres() || film.getGenres().isEmpty()) {
             return;
         }
