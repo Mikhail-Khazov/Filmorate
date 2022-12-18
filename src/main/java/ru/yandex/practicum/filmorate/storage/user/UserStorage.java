@@ -9,13 +9,10 @@ public interface UserStorage {
 
     User create(User user);
 
-    User update(User user);
+    int update(User user);
 
     Optional<User> get(int userId);
 
     List<User> getAll();
 
-    List<User> commonFriends(int userId, int friendId);
-
-    List<User> getFriends(int userId);
 }
