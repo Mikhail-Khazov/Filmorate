@@ -37,6 +37,7 @@ public class FilmDbTest {
                 .description("Where Love Cuts as Deep as a Dagger!")
                 .releaseDate(LocalDate.parse("1942-11-26"))
                 .duration(103)
+                .mpa(new MPAAFilmRating(2, "PG"))
                 .build();
         filmController.create(filmSample1);
 
@@ -44,6 +45,7 @@ public class FilmDbTest {
                 .description("The most magnificent picture ever!")
                 .releaseDate(LocalDate.parse("1939-12-15"))
                 .duration(222)
+                .mpa(new MPAAFilmRating(2, "PG"))
                 .build();
         filmController.create(filmSample2);
     }

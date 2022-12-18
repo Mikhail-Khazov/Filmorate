@@ -9,16 +9,18 @@ import ru.yandex.practicum.filmorate.storage.RowMapper;
 import java.util.List;
 import java.util.Optional;
 
-@Repository("mpaaRatingDbStorage")
+@Repository
 @RequiredArgsConstructor
-public class MPAARatingDbStorage {
+public class MPAARatingDbStorage implements MPAARatingStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    @Override
     public List<MPAAFilmRating> getAll() {
         String sqlQuery = "SELECT * FROM mpa";
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToMPAAFilmRating);
     }
 
+    @Override
     public Optional<MPAAFilmRating> getById(int id) {
         String sqlQuery = "SELECT * FROM mpa WHERE RATING_ID = ?";
         List<MPAAFilmRating> mpa = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToMPAAFilmRating, id);

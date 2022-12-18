@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 
-@Repository("likeDbStorage")
+@Repository
 @RequiredArgsConstructor
 public class LikesDbStorage implements LikesStorage {
     private final JdbcTemplate jdbcTemplate;

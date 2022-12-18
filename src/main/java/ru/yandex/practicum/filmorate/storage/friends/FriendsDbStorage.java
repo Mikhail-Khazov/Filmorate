@@ -5,30 +5,24 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.RowMapper;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Arrays;
 import java.util.List;
 
-@Repository("friendsDBStorage")
+@Repository
 @RequiredArgsConstructor
 public class FriendsDbStorage implements FriendsStorage {
-    private final UserStorage userStorage;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<User> addFriend(int userId, int friendId) {
+    public void addFriend(int userId, int friendId) {
         String sqlQuery = "INSERT INTO friends (USER_ID, FRIEND_ID) VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId);
-        return Arrays.asList(userStorage.get(userId).orElseThrow(), userStorage.get(friendId).orElseThrow());
-
     }
 
     @Override
-    public List<User> deleteFriend(int userId, int friendId) {
+    public void deleteFriend(int userId, int friendId) {
         String sqlQuery = "DELETE FROM friends WHERE USER_ID = ? AND FRIEND_ID = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
-        return Arrays.asList(userStorage.get(userId).orElseThrow(), userStorage.get(friendId).orElseThrow());
     }
 
     @Override

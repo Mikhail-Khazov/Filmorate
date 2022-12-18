@@ -29,9 +29,8 @@ public class UserService {
     }
 
     public User update(User user) {
-        nameCheck(user);
-        return userStorage.update(user).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id: " + user.getId() + ", не найден"));
+        if (userStorage.update(user) > 0) return user;
+        else throw new UserNotFoundException("Пользователь с id: " + user.getId() + ", не найден");
     }
 
     public List<User> getAll() {

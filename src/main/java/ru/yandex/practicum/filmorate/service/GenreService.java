@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.List;
 
@@ -13,14 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class GenreService {
-    private final GenreDbStorage genreDbStorage;
+    private final GenreStorage genreStorage;
 
     public List<FilmGenre> getAll() {
-        return genreDbStorage.getAll();
+        return genreStorage.getAll();
     }
 
     public FilmGenre getById(int genreId) {
-        FilmGenre genre = genreDbStorage.getById(genreId).orElseThrow(
+        FilmGenre genre = genreStorage.getById(genreId).orElseThrow(
                 () -> new GenreNotFoundException("Жанр с id: " + genreId + " не найден")
         );
         log.info("Получен жанр c id: {}", genreId);
@@ -28,6 +29,10 @@ public class GenreService {
     }
 
     public FilmGenre create(FilmGenre genre) {
-        return genreDbStorage.create(genre);
+        return genreStorage.create(genre);
+    }
+
+    public List<Film> setGenres (List<Film> films) {
+        return genreStorage.setGenres(films);
     }
 }

@@ -15,14 +15,15 @@ import java.util.List;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final GenreService genreService;
 
     public Film create(Film film) {
         return filmStorage.create(film);
     }
 
     public Film update(Film film) {
-        validateFilm(film.getId());
-        return filmStorage.update(film);
+        if (filmStorage.update(film) > 0) return film;
+        else throw new FilmNotFoundException("Фильм с id: " + film.getId() + ", не найден");
     }
 
     public Film get(int filmId) {
@@ -30,23 +31,19 @@ public class FilmService {
                 () -> new FilmNotFoundException("Фильм с id: " + filmId + ", не найден")
         );
         log.info("Получен фильм c id: {}", filmId);
-        return film;
+        return genreService.setGenres(List.of(film)).get(0);
     }
 
     public List<Film> getAll() {
-        return filmStorage.getAll();
+        return genreService.setGenres(filmStorage.getAll());
     }
 
     public List<Film> getTopFilms(int count) {
-        return filmStorage.getTopFilms(count);
+        return genreService.setGenres(filmStorage.getTopFilms(count));
     }
 
     public MPAAFilmRating getRating(int filmId) {
         return filmStorage.getMpaaRating(filmId);
     }
 
-    public void validateFilm(int id) {
-        filmStorage.get(id).orElseThrow(() -> new FilmNotFoundException("Фильм с id: " + id + ", не найден"));
-        log.info("Фильм с id: {}, есть в базе данных", id);
-    }
 }

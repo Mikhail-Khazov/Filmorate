@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
@@ -8,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@UtilityClass
 public class RowMapper {
     public static User mapRowToUser(ResultSet rs, int row) throws SQLException {
         return new User(rs.getInt("USER_ID"),

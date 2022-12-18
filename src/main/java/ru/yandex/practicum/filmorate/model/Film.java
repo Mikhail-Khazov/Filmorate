@@ -31,6 +31,7 @@ public class Film {
     @Min(value = 0, message = "Продолжительность не должна быть отрицательной")
     private long duration;
 
+    @NotNull
     private MPAAFilmRating mpa;
 
     private Set<FilmGenre> genres;
@@ -42,6 +43,10 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
+    }
+
+    public void addGenre(FilmGenre genre) {
+        genres.add(genre);
     }
 }
 

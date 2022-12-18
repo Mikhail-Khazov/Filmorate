@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,9 +15,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Repository("userDBStorage")
+@Repository
 @RequiredArgsConstructor
-@Primary
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -41,17 +39,16 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> update(User user) {
+    public int update(User user) {
         String sqlQuery = "UPDATE users SET EMAIL = ?, LOGIN = ?, USER_NAME = ?, BIRTHDAY = ? WHERE USER_ID = ?";
 
-        jdbcTemplate.update(sqlQuery,
+        return jdbcTemplate.update(sqlQuery,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
                 user.getBirthday(),
                 user.getId()
         );
-        return get(user.getId());
     }
 
     @Override

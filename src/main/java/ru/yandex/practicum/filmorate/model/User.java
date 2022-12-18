@@ -26,6 +26,7 @@ public class User {
 
     private String name;
 
+    @NotNull
     @PastOrPresent(message = "Некорректно указана дата рождения")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;

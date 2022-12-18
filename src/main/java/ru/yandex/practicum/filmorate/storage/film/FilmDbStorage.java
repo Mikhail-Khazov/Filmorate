@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -15,11 +14,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Repository("filmDbStorage")
+@Repository
 @RequiredArgsConstructor
-@Primary
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -45,10 +42,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film update(Film film) {
-        String sqlQuery = "UPDATE films SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ? WHERE FILM_ID = ?";
+    public int update(Film film) {
+        String sqlQuery = "UPDATE films " +
+                "SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ? " +
+                "WHERE FILM_ID = ?";
 
-        jdbcTemplate.update(sqlQuery,
+        int updatedRowCount = jdbcTemplate.update(sqlQuery,
                 film.getName(),
                 film.getDescription(),
                 film.getReleaseDate(),
@@ -57,7 +56,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId()
         );
         writeGenreToDB(film);
-        return get(film.getId()).orElseThrow();
+        return updatedRowCount;
     }
 
     @Override
@@ -71,18 +70,7 @@ public class FilmDbStorage implements FilmStorage {
             return Optional.empty();
         }
         Film film = films.get(0);
-        setGenreForPOJO(film);
-//        setLikesForPOJO(film);
         return Optional.of(film);
-    }
-
-    private void setGenreForPOJO(Film film) {
-        String sqlQuery = "SELECT g.GENRE_ID, g.TITLE " +
-                "FROM filmGenre AS fg " +
-                "LEFT JOIN genres AS g ON fg.GENRE_ID = g.GENRE_ID " +
-                "WHERE fg.FILM_ID = ?";
-        Set<FilmGenre> genreSet = new HashSet<>(jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, film.getId()));
-        film.setGenres(genreSet);
     }
 
     @Override
@@ -91,23 +79,29 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID ";
         final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm);
-        films.forEach(this::setGenreForPOJO);
         return films;
     }
 
+    private void deleteAllGenres(int id) {
+        String sqlQueryDelete = "DELETE FROM film_Genre WHERE FILM_ID = ?";
+        jdbcTemplate.update(sqlQueryDelete, id);
+    }
+
     private void writeGenreToDB(Film film) {
-        String sqlQueryDelete = "DELETE FROM filmGenre WHERE FILM_ID = ?";
-        jdbcTemplate.update(sqlQueryDelete, film.getId());
+        deleteAllGenres(film.getId());
         if (null == film.getGenres() || film.getGenres().isEmpty()) {
             return;
         }
-        List<FilmGenre> genres = film.getGenres().stream().distinct().collect(Collectors.toList());
-        StringBuilder sqlQuery = new StringBuilder();
-        for (FilmGenre filmGenre : genres) {
-            String query = String.format("INSERT INTO filmGenre (FILM_ID, GENRE_ID) VALUES (%d, %d); ", film.getId(), filmGenre.getId());
-            sqlQuery.append(query);
-        }
-        jdbcTemplate.update(sqlQuery.toString());
+        List<FilmGenre> genres = new ArrayList<>(film.getGenres());
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO film_Genre (FILM_ID, GENRE_ID) VALUES (?, ?); ",
+                genres,
+                genres.size(),
+                (PreparedStatement ps, FilmGenre genre) -> {
+                    ps.setInt(1, film.getId());
+                    ps.setInt(2, genre.getId());
+                }
+        );
     }
 
     public MPAAFilmRating getMpaaRating(int filmId) {
@@ -124,7 +118,6 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY COUNT (l.USER_ID) DESC " +
                 "LIMIT ? ";
         final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, count);
-        films.forEach(this::setGenreForPOJO);
         return films;
     }
 }

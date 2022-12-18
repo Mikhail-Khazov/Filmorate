@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface FilmStorage {
     Film create(Film film);
 
-    Film update(Film film);
+    int update(Film film);
 
     Optional<Film> get(int filmId);
 
