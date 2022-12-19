@@ -120,4 +120,10 @@ public class FilmDbStorage implements FilmStorage {
         final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, count);
         return films;
     }
+
+    @Override
+    public boolean delete(int filmId) {
+        final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
+        return jdbcTemplate.update(sqlQuery, filmId) > 0;
+    }
 }

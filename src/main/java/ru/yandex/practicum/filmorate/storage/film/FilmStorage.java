@@ -18,4 +18,6 @@ public interface FilmStorage {
     List<Film> getTopFilms(int count);
 
     MPAAFilmRating getMpaaRating(int filmId);
+
+    boolean delete(int filmId);
 }
