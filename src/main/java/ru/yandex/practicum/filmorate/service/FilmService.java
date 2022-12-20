@@ -52,6 +52,9 @@ public class FilmService {
         return filmStorage.getMpaaRating(filmId);
     }
 
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
     public void delete(int filmId) {
         if (!filmStorage.delete(filmId)) {
             throw new FilmNotFoundException("Фильм с id: " + filmId + ", не найден");

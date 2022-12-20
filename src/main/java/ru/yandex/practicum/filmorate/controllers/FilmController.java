@@ -49,6 +49,11 @@ public class FilmController {
         return filmService.getRating(filmId);
     }
 
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
     @DeleteMapping("/{filmId}")
     public void delete(@PathVariable int filmId){
         filmService.delete(filmId);

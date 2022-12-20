@@ -109,6 +109,21 @@ public class FilmDbStorage implements FilmStorage {
         return film.getMpa();
     }
 
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        final String sqlQuery = "SELECT f. *, r. * " +
+                                "FROM films AS f " +
+                                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? " +
+                                "INTERSECT SELECT f. *, r. * " +
+                                "FROM films AS f " +
+                                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;" ;
+
+        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm,userId,friendId);
+        return films;
+    }
+
     public List<Film> getTopFilms(int count) {
         String sqlQuery = "SELECT f. *, r.MPA " +
                 "FROM films AS f " +
