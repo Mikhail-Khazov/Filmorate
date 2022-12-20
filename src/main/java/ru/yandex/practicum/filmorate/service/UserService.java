@@ -49,4 +49,10 @@ public class UserService {
         userStorage.get(id).orElseThrow(() -> new UserNotFoundException("Пользователь с id: " + id + ", не найден"));
         log.info("Пользователь с id: {}, есть в базе данных", id);
     }
+
+    public void delete(int userId) {
+        if (!userStorage.delete(userId)) {
+            throw new UserNotFoundException("Пользователь с id: " + userId + ", не найден");
+        }
+    }
 }

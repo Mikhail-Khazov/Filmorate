@@ -48,4 +48,9 @@ public class FilmController {
     public MPAAFilmRating getRating(@PathVariable int filmId) {
         return filmService.getRating(filmId);
     }
+
+    @DeleteMapping("/{filmId}")
+    public void delete(@PathVariable int filmId){
+        filmService.delete(filmId);
+    }
 }
