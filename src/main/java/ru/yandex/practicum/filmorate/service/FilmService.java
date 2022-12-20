@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -53,5 +54,10 @@ public class FilmService {
 
     public List<Film> getCommonFilms(int userId, int friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
+    }
+    public void delete(int filmId) {
+        if (!filmStorage.delete(filmId)) {
+            throw new FilmNotFoundException("Фильм с id: " + filmId + ", не найден");
+        }
     }
 }

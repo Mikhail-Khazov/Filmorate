@@ -33,4 +33,9 @@ public class UserController {
     public List<User> getAll() {
         return userService.getAll();
     }
+
+    @DeleteMapping("/{userId}")
+    public void delete(@PathVariable int userId){
+        userService.delete(userId);
+    }
 }
