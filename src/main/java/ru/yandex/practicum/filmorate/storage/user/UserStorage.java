@@ -15,4 +15,5 @@ public interface UserStorage {
 
     List<User> getAll();
 
+    boolean delete(int userId);
 }
