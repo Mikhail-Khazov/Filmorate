@@ -2,11 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
+    private final DirectorStorage directorStorage;
 
     public Film create(Film film) {
         return filmStorage.create(film);
@@ -55,6 +59,15 @@ public class FilmService {
     public void delete(int filmId) {
         if (!filmStorage.delete(filmId)) {
             throw new FilmNotFoundException("Фильм с id: " + filmId + ", не найден");
+        }
+    }
+
+    public List<Film> getSortedFilms(int directorId, String sortBy) {
+        try {
+            directorStorage.get(directorId);
+            return filmStorage.getSortedFilms(directorId, sortBy);
+        } catch (EmptyResultDataAccessException e) {
+            throw new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден");
         }
     }
 }

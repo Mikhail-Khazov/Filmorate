@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,5 +61,22 @@ public class GenreDbStorage implements GenreStorage {
                     film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
                     },
                 films.stream().map(Film::getId).toArray());
+    }
+
+    @Override
+    public List<FilmGenre> getFilmGenres(int filmId) {
+        try {
+            String select = "SELECT * " +
+                    "FROM genres " +
+                    "INNER JOIN film_genre ON film_genre.GENRE_ID = genres.GENRE_ID " +
+                    "AND film_genre.FILM_ID = ?";
+            return jdbcTemplate.query(select, (rs, rowNum) -> makeGenre(rs), filmId);
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    private FilmGenre makeGenre(ResultSet rs) throws SQLException {
+        return new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE"));
     }
 }

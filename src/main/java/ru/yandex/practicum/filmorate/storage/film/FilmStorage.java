@@ -20,4 +20,6 @@ public interface FilmStorage {
     MPAAFilmRating getMpaaRating(int filmId);
 
     boolean delete(int filmId);
+
+    List<Film> getSortedFilms(int directorId, String sortBy);
 }

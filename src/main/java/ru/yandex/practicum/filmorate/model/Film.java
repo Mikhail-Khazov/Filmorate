@@ -35,7 +35,9 @@ public class Film {
     @NotNull
     private MPAAFilmRating mpa;
 
+    private Set<Integer> likes;
     private Set<FilmGenre> genres;
+    private Set<Director> directors;
 
     public Film(int id, String name, String description, LocalDate releaseDate, long duration, MPAAFilmRating mpa) {
         this.id = id;
@@ -45,6 +47,8 @@ public class Film {
         this.duration = duration;
         this.mpa = mpa;
         this.genres = new HashSet<>();
+        this.directors = new HashSet<>();
+        this.likes = new HashSet<>();
     }
 
     public void addGenre(FilmGenre genre) {
