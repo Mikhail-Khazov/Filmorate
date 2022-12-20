@@ -48,4 +48,10 @@ public class FilmController {
     public MPAAFilmRating getRating(@PathVariable int filmId) {
         return filmService.getRating(filmId);
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(Integer userId, @RequestParam Integer friendId) {
+        return filmService.getCommonFilms(userId,friendId);
+    }
+
 }

@@ -18,4 +18,6 @@ public interface FilmStorage {
     List<Film> getTopFilms(int count);
 
     MPAAFilmRating getMpaaRating(int filmId);
+
+    List<Film> getCommonFilms (int userId, int friendId);
 }
