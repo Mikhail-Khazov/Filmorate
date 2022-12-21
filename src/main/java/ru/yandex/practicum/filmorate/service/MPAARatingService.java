@@ -22,7 +22,7 @@ public class MPAARatingService {
 
     public MPAAFilmRating getById(int mpaaId) {
         MPAAFilmRating mpa = mpaaRatingStorage.getById(mpaaId).orElseThrow(
-                () -> new MPAARatingNotFoundException("Возрастного рейтина с id: " + mpaaId + " не сувществует.")
+                () -> new MPAARatingNotFoundException("Возрастного рейтина с id: " + mpaaId + " не существует.")
         );
         log.info("Получен возрастной рейтинг c id: {}", mpaaId);
         return mpa;

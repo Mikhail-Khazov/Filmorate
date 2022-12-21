@@ -22,4 +22,3 @@ public class AfterValidator implements ConstraintValidator<After, LocalDate> {
         return valid;
     }
 }
-

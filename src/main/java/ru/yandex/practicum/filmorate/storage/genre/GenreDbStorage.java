@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,7 +48,8 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void setGenres(List<Film> films) {
-        String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
+        films.forEach(f -> f.setGenres(new HashSet<>()));
+        final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 
         jdbcTemplate.query(
@@ -57,7 +60,12 @@ public class GenreDbStorage implements GenreStorage {
                 (rs) -> {
                     final Film film = filmById.get(rs.getInt("FILM_ID"));
                     film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
-                    },
+                },
                 films.stream().map(Film::getId).toArray());
+    }
+
+    @Override
+    public List<FilmGenre> getFilmGenres(int filmId, String sqlQuery) {
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, filmId);
     }
 }

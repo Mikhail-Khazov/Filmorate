@@ -1,13 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.*;
 import lombok.experimental.UtilityClass;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.model.User;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 @UtilityClass
 public class RowMapper {
@@ -27,6 +24,12 @@ public class RowMapper {
                 rs.getDate("RELEASE_DATE").toLocalDate(),
                 rs.getLong("DURATION"),
                 new MPAAFilmRating(rs.getInt("RATING_ID"), rs.getString("MPA"))
+        );
+    }
+
+    public static Director mapRowToDirector(ResultSet rs, int row) throws SQLException {
+        return new Director(rs.getInt("DIRECTOR_ID"),
+                rs.getString("DIRECTOR_NAME")
         );
     }
 

@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
+import ru.yandex.practicum.filmorate.model.Film;
+import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
 
@@ -15,8 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class FilmService {
-    private final FilmStorage filmStorage;
+    private final DirectorService directorService;
     private final GenreService genreService;
+    private final FilmStorage filmStorage;
 
     public Film create(Film film) {
         return filmStorage.create(film);
@@ -33,17 +34,20 @@ public class FilmService {
         );
         log.info("Получен фильм c id: {}", filmId);
         genreService.setGenres(List.of(film));
+        directorService.setDirectors(List.of(film));
         return film;
     }
 
     public List<Film> getAll() {
         List<Film> allFilms = filmStorage.getAll();
+        directorService.setDirectors(allFilms);
         genreService.setGenres(allFilms);
         return allFilms;
     }
 
     public List<Film> getTopFilms(int count) {
         List<Film> topFilms = filmStorage.getTopFilms(count);
+        directorService.setDirectors(topFilms);
         genreService.setGenres(topFilms);
         return topFilms;
     }
@@ -59,5 +63,15 @@ public class FilmService {
         if (!filmStorage.delete(filmId)) {
             throw new FilmNotFoundException("Фильм с id: " + filmId + ", не найден");
         }
+    }
+
+    public List<Film> getSortedFilms(int directorId, String sortBy) {
+        List<Film> sortedFilms = filmStorage.getSortedFilms(directorId, sortBy);
+        if (sortedFilms.isEmpty()) {
+            throw new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден");
+        }
+        directorService.setDirectors(sortedFilms);
+        genreService.setGenres(sortedFilms);
+        return sortedFilms;
     }
 }
