@@ -61,7 +61,6 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void setDirectors(List<Film> films) {
-        films.forEach(f -> f.setDirectors(new HashSet<>()));
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 

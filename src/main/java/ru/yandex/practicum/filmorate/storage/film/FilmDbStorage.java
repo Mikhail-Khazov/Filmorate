@@ -46,9 +46,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public int update(Film film) {
-        if (null == film.getGenres() || film.getGenres().isEmpty()) {
-            film.setGenres(new HashSet<>());
-        }
         final String sqlQuery = "UPDATE films " +
                 "SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ? " +
                 "WHERE FILM_ID = ?";

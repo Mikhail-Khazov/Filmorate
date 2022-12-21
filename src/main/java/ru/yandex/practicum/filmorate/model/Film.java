@@ -6,14 +6,12 @@ import ru.yandex.practicum.filmorate.validators.After;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class Film {
     private int id;
 
@@ -44,6 +42,8 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
+        this.genres = new HashSet<>();
+        this.directors = new HashSet<>();
     }
 
     public void addGenre(FilmGenre genre) {
