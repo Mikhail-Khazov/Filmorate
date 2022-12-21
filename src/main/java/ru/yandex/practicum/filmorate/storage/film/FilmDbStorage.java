@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
 import ru.yandex.practicum.filmorate.storage.RowMapper;
@@ -22,8 +20,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
 
-    private final DirectorDbStorage directorDbStorage;
-    private final GenreDbStorage genreDbStorage;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -178,25 +174,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private List<Film> getFilms(int directorId, String sqlQuery) {
-        List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilmSorting, directorId);
-        for (Film film : films) {
-            if (null != film.getGenres()) {
-                film.getGenres().addAll(genreDbStorage.getFilmGenres(film.getId()));
-            }
-            if (null != film.getLikes()) {
-                film.getLikes().addAll(getUserLikes(film.getId()));
-            }
-            if (null != film.getDirectors()) {
-                film.getDirectors().addAll(directorDbStorage.getDirectorByFilmId(film.getId()));
-            }
-        }
-        return films;
-    }
-
-    private List<Integer> getUserLikes(int filmId) {
-        final String select = "SELECT USER_ID " +
-                "FROM liked " +
-                "WHERE FILM_ID = ?";
-        return jdbcTemplate.query(select, (rs, rowNum) -> rs.getInt("USER_ID"), filmId);
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, directorId);
     }
 }

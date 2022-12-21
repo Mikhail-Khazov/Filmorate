@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Optional;
 import java.util.List;
-import java.util.Set;
 
 public interface DirectorStorage {
     Director create(Director director);
@@ -15,8 +14,6 @@ public interface DirectorStorage {
     Optional<Director> get(int directorId);
 
     List<Director> getAll();
-
-    Set<Director> getDirectorByFilmId(int id);
 
     boolean delete(int directorId);
 

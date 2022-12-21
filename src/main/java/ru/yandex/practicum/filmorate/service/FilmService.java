@@ -1,28 +1,23 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
+import ru.yandex.practicum.filmorate.model.Film;
+import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class FilmService {
-    private final FilmStorage filmStorage;
-    private final GenreService genreService;
     private final DirectorService directorService;
-    private final DirectorStorage directorStorage;
+    private final GenreService genreService;
+    private final FilmStorage filmStorage;
 
     public Film create(Film film) {
         return filmStorage.create(film);
@@ -45,8 +40,8 @@ public class FilmService {
 
     public List<Film> getAll() {
         List<Film> allFilms = filmStorage.getAll();
-        genreService.setGenres(allFilms);
         directorService.setDirectors(allFilms);
+        genreService.setGenres(allFilms);
         return allFilms;
     }
 
@@ -69,6 +64,9 @@ public class FilmService {
 
     public List<Film> getSortedFilms(int directorId, String sortBy) {
         List<Film> sortedFilms = filmStorage.getSortedFilms(directorId, sortBy);
+        if (sortedFilms.isEmpty()) {
+            throw new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден");
+        }
         directorService.setDirectors(sortedFilms);
         genreService.setGenres(sortedFilms);
         return sortedFilms;

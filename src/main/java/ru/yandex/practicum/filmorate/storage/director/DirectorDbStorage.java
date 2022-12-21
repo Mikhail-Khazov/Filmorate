@@ -55,15 +55,6 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Set<Director> getDirectorByFilmId(int id) {
-        return new HashSet<>(jdbcTemplate.query(String.format("SELECT d.DIRECTOR_ID, d.DIRECTOR_NAME " +
-                "FROM director AS d " +
-                "JOIN directors AS ds ON d.DIRECTOR_ID = ds.DIRECTOR_ID " +
-                "WHERE ds.FILM_ID = %d " +
-                "ORDER BY d.DIRECTOR_ID", id), RowMapper::mapRowToDirectorSorting));
-    }
-
-    @Override
     public boolean delete(int directorId) {
         final String sqlQuery = "DELETE FROM directors WHERE DIRECTOR_ID = ?";
         return jdbcTemplate.update(sqlQuery, directorId) > 0;
@@ -71,6 +62,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void setDirectors(List<Film> films) {
+        films.forEach(f -> f.setDirectors(new HashSet<>()));
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 

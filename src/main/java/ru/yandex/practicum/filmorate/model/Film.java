@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.validators.After;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -35,7 +34,6 @@ public class Film {
     @NotNull
     private MPAAFilmRating mpa;
 
-    private Set<Integer> likes;
     private Set<FilmGenre> genres;
     private Set<Director> directors;
 
@@ -46,9 +44,6 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
-        this.genres = new HashSet<>();
-        this.directors = new HashSet<>();
-        this.likes = new HashSet<>();
     }
 
     public void addGenre(FilmGenre genre) {

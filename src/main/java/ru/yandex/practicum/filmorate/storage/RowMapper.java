@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.model.*;
+import lombok.experimental.UtilityClass;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 @UtilityClass
 public class RowMapper {
@@ -31,25 +31,6 @@ public class RowMapper {
         return new Director(rs.getInt("DIRECTOR_ID"),
                 rs.getString("DIRECTOR_NAME")
         );
-    }
-
-    public static Director mapRowToDirectorSorting(ResultSet rs, int row) throws SQLException {
-        Director director = new Director();
-        director.setId(rs.getInt("DIRECTOR_ID"));
-        director.setName(rs.getString("DIRECTOR_NAME"));
-        return director;
-    }
-
-    public static Film mapRowToFilmSorting(ResultSet rs, int row) throws SQLException {
-        Film film = new Film();
-        film.setId(rs.getInt("FILM_ID"));
-        film.setName(rs.getString("FILM_NAME"));
-        film.setDuration(rs.getInt("DURATION"));
-        film.setDescription(rs.getString("DESCRIPTION"));
-        film.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
-        MPAAFilmRating mpa = new MPAAFilmRating(rs.getInt("RATING_ID"), rs.getString("MPA"));
-        film.setMpa(mpa);
-        return film;
     }
 
     public static FilmGenre mapRowToGenre(ResultSet rs, int row) throws SQLException {

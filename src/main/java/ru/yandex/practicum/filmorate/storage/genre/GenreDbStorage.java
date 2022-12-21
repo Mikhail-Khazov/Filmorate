@@ -48,6 +48,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void setGenres(List<Film> films) {
+        films.forEach(f -> f.setGenres(new HashSet<>()));
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 
