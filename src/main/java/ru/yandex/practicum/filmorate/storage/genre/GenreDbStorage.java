@@ -48,7 +48,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void setGenres(List<Film> films) {
-        String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
+        final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 
         jdbcTemplate.query(
@@ -58,22 +58,21 @@ public class GenreDbStorage implements GenreStorage {
                         "WHERE fg.FILM_ID IN (%s)", inSql),
                 (rs) -> {
                     final Film film = filmById.get(rs.getInt("FILM_ID"));
-                    film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
-                    },
+
+                    if (null != film.getGenres()) {
+                        film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
+                    }
+                },
                 films.stream().map(Film::getId).toArray());
     }
 
     @Override
     public List<FilmGenre> getFilmGenres(int filmId) {
-        try {
-            String select = "SELECT * " +
-                    "FROM genres " +
-                    "INNER JOIN film_genre ON film_genre.GENRE_ID = genres.GENRE_ID " +
-                    "AND film_genre.FILM_ID = ?";
-            return jdbcTemplate.query(select, (rs, rowNum) -> makeGenre(rs), filmId);
-        } catch (Throwable e) {
-            return null;
-        }
+        String select = "SELECT * " +
+                "FROM genres " +
+                "INNER JOIN film_genre ON film_genre.GENRE_ID = genres.GENRE_ID " +
+                "AND film_genre.FILM_ID = ?";
+        return jdbcTemplate.query(select, (rs, rowNum) -> makeGenre(rs), filmId);
     }
 
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {

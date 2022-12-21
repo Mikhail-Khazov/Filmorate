@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -20,6 +21,7 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
+    private final DirectorService directorService;
     private final DirectorStorage directorStorage;
 
     public Film create(Film film) {
@@ -37,17 +39,20 @@ public class FilmService {
         );
         log.info("Получен фильм c id: {}", filmId);
         genreService.setGenres(List.of(film));
+        directorService.setDirectors(List.of(film));
         return film;
     }
 
     public List<Film> getAll() {
         List<Film> allFilms = filmStorage.getAll();
         genreService.setGenres(allFilms);
+        directorService.setDirectors(allFilms);
         return allFilms;
     }
 
     public List<Film> getTopFilms(int count) {
         List<Film> topFilms = filmStorage.getTopFilms(count);
+        directorService.setDirectors(topFilms);
         genreService.setGenres(topFilms);
         return topFilms;
     }
@@ -63,11 +68,9 @@ public class FilmService {
     }
 
     public List<Film> getSortedFilms(int directorId, String sortBy) {
-        try {
-            directorStorage.get(directorId);
-            return filmStorage.getSortedFilms(directorId, sortBy);
-        } catch (EmptyResultDataAccessException e) {
-            throw new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден");
-        }
+        List<Film> sortedFilms = filmStorage.getSortedFilms(directorId, sortBy);
+        directorService.setDirectors(sortedFilms);
+        genreService.setGenres(sortedFilms);
+        return sortedFilms;
     }
 }

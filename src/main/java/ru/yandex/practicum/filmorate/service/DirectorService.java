@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.model.Director;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,9 @@ public class DirectorService {
         if (!directorStorage.delete(directorId)) {
             throw new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден");
         }
+    }
+
+    public void setDirectors(List<Film> films) {
+        directorStorage.setDirectors(films);
     }
 }
