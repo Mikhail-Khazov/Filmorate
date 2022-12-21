@@ -15,5 +15,5 @@ public interface GenreStorage {
 
     void setGenres(List<Film> films);
 
-    List<FilmGenre> getFilmGenres(int filmId);
+    List<FilmGenre> getFilmGenres(int filmId, String sqlQuery);
 }

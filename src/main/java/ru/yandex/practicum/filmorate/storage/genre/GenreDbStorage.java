@@ -59,24 +59,13 @@ public class GenreDbStorage implements GenreStorage {
                         "WHERE fg.FILM_ID IN (%s)", inSql),
                 (rs) -> {
                     final Film film = filmById.get(rs.getInt("FILM_ID"));
-
-                    if (null != film.getGenres()) {
-                        film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
-                    }
+                    film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
                 },
                 films.stream().map(Film::getId).toArray());
     }
 
     @Override
-    public List<FilmGenre> getFilmGenres(int filmId) {
-        String select = "SELECT * " +
-                "FROM genres " +
-                "INNER JOIN film_genre ON film_genre.GENRE_ID = genres.GENRE_ID " +
-                "AND film_genre.FILM_ID = ?";
-        return jdbcTemplate.query(select, (rs, rowNum) -> makeGenre(rs), filmId);
-    }
-
-    private FilmGenre makeGenre(ResultSet rs) throws SQLException {
-        return new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE"));
+    public List<FilmGenre> getFilmGenres(int filmId, String sqlQuery) {
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, filmId);
     }
 }

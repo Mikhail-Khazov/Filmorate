@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import lombok.RequiredArgsConstructor;
 
+import java.util.stream.Collectors;
 import java.sql.PreparedStatement;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -44,8 +44,7 @@ public class DirectorDbStorage implements DirectorStorage {
         final List<Director> directors = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToDirector, directorId);
 
         if (directors.isEmpty()) return Optional.empty();
-        Director director = directors.get(0);
-        return Optional.of(director);
+        return directors.stream().findFirst();
     }
 
     @Override

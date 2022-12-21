@@ -24,7 +24,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        final String sqlQuery = "INSERT INTO films (FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) VALUES (?, ?, ?, ?, ?)";
+        final String sqlQuery = "INSERT INTO films (FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) " +
+                "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update((connection) -> {
             PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
@@ -45,10 +46,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public int update(Film film) {
-        if (null == film.getGenres() || film.getGenres().isEmpty()) film.setGenres(new HashSet<>());
+        if (null == film.getGenres() || film.getGenres().isEmpty()) {
+            film.setGenres(new HashSet<>());
+        }
         final String sqlQuery = "UPDATE films " +
                 "SET FILM_NAME = ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ? " +
                 "WHERE FILM_ID = ?";
+
         int updatedRowCount = jdbcTemplate.update(sqlQuery,
                 film.getName(),
                 film.getDescription(),
@@ -59,7 +63,7 @@ public class FilmDbStorage implements FilmStorage {
         );
         deleteAllGenres(film.getId());
         writeGenreToDB(film);
-        deleteAllDirectors(film.getId());
+        deleteDirectors(film.getId());
         writeDirectorToDB(film);
         return updatedRowCount;
     }
@@ -71,11 +75,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "WHERE FILM_ID = ? ";
         final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, filmId);
-        if (films.isEmpty()) {
-            return Optional.empty();
-        }
-        Film film = films.get(0);
-        return Optional.of(film);
+        return films.stream().findFirst();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class FilmDbStorage implements FilmStorage {
         );
     }
 
-    private void deleteAllDirectors(int id) {
+    private void deleteDirectors(int id) {
         final String sqlQueryDelete = "DELETE FROM film_directors WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQueryDelete, id);
     }
@@ -148,28 +148,21 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getSortedFilms(int directorId, String sortBy) {
-        if ("year".equals(sortBy)) {
-            final String sqlQuery = "SELECT *, COUNT(*) AS likes " +
-                    "FROM films AS f " +
-                    "JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID " +
-                    "JOIN mpa AS m ON f.RATING_ID = m.RATING_ID " +
-                    "LEFT JOIN liked AS l ON f.FILM_ID = l.FILM_ID " +
-                    "WHERE fd.DIRECTOR_ID = ?" +
-                    "GROUP BY f.FILM_ID " +
-                    "ORDER BY f.RELEASE_DATE";
-            return getFilms(directorId, sqlQuery);
-        } else if ("likes".equals(sortBy)) {
-            final String sqlQuery = "SELECT *, COUNT(*) AS likes " +
-                    "FROM films AS f " +
-                    "JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID " +
-                    "JOIN mpa AS m ON f.RATING_ID = m.RATING_ID " +
-                    "LEFT JOIN liked AS l ON f.FILM_ID = l.FILM_ID " +
-                    "WHERE fd.DIRECTOR_ID = ?" +
-                    "GROUP BY f.FILM_ID " +
-                    "ORDER BY likes";
-            return getFilms(directorId, sqlQuery);
+        final String sqlQuery = "SELECT *, COUNT(*) AS likes " +
+                "FROM films AS f " +
+                "JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID " +
+                "JOIN mpa AS m ON f.RATING_ID = m.RATING_ID " +
+                "LEFT JOIN liked AS l ON f.FILM_ID = l.FILM_ID " +
+                "WHERE fd.DIRECTOR_ID = ?" +
+                "GROUP BY f.FILM_ID ";
+
+        if (SortBy.YEAR.value.equals(sortBy)) {
+            return getFilms(directorId, sqlQuery + "ORDER BY f.RELEASE_DATE");
+        }
+        if (SortBy.LIKES.value.equals(sortBy)) {
+            return getFilms(directorId, sqlQuery + "ORDER BY likes");
         } else {
-            throw new RuntimeException("Извините, данный вариант сортировки отсутствует");
+            throw new RuntimeException("Некорректный параметр запроса \"sortBy\"");
         }
     }
 
