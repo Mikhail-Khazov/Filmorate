@@ -186,11 +186,11 @@ public class FilmDbStorage implements FilmStorage {
     private LinkedHashSet<Integer> getIndexesOfSearchedFilms(SearchBy queriedItem, String queriedText) {
         LinkedHashSet<Integer> result = new LinkedHashSet<>();
         String sqlQuery = String.format("SELECT id, f_name AS %s, d_name AS %s " +
-                "FROM FILMS_VIEW_SEARCH AS f ", SearchBy.title, SearchBy.director);
+                "FROM FILMS_VIEW_SEARCH AS f ", SearchBy.TITLE, SearchBy.DIRECTOR);
 
         jdbcTemplate.query(sqlQuery, (rs) -> {
             String str = rs.getString(queriedItem.value + 1);
-            if (str != null && str.trim().toLowerCase().contains(queriedText)) {
+            if (str != null && str.trim().toUpperCase().contains(queriedText)) {
                 result.add(rs.getInt(1));
             }
         });
@@ -199,12 +199,15 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> searchFilms(List<String> searchBy, String queriedText) {
+    public List<Film> searchFilms(List<String> srch, String queriedText) {
+        ArrayList<String> searchBy = new ArrayList<>();
+        for(String s : srch) searchBy.add(s.trim().toUpperCase());
         Collections.reverse(searchBy);
+        queriedText = queriedText.trim().toUpperCase();
         LinkedHashSet<Integer> listFilmIndexes = new LinkedHashSet<>();
 
         for (String e : searchBy) {
-            listFilmIndexes.addAll(getIndexesOfSearchedFilms(SearchBy.toEnum(e), queriedText.trim().toLowerCase()));
+            listFilmIndexes.addAll(getIndexesOfSearchedFilms(SearchBy.toEnum(e), queriedText));
         }
 
         ArrayList<Integer> arrayFilmIndexes = new ArrayList<>(listFilmIndexes);
