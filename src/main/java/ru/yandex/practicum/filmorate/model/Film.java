@@ -1,10 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.filmorate.validators.After;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,9 +17,6 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class Film {
     private int id;
 
@@ -36,6 +38,7 @@ public class Film {
     private MPAAFilmRating mpa;
 
     private Set<FilmGenre> genres;
+    private Set<Director> directors;
 
     public Film(int id, String name, String description, LocalDate releaseDate, long duration, MPAAFilmRating mpa) {
         this.id = id;
@@ -45,11 +48,14 @@ public class Film {
         this.duration = duration;
         this.mpa = mpa;
         this.genres = new HashSet<>();
+        this.directors = new HashSet<>();
     }
 
     public void addGenre(FilmGenre genre) {
         genres.add(genre);
     }
+
+    public void addDirector(Director director) {
+        directors.add(director);
+    }
 }
-
-

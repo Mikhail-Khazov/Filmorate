@@ -27,6 +27,12 @@ public class RowMapper {
         );
     }
 
+    public static Director mapRowToDirector(ResultSet rs, int row) throws SQLException {
+        return new Director(rs.getInt("DIRECTOR_ID"),
+                rs.getString("DIRECTOR_NAME")
+        );
+    }
+
     public static FilmGenre mapRowToGenre(ResultSet rs, int row) throws SQLException {
         return new FilmGenre(rs.getInt("GENRE_ID"),
                 rs.getString("TITLE")

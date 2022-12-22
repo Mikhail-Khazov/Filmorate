@@ -1,8 +1,5 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exceptions.*;
+import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
@@ -62,6 +60,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleDirectorNotFound(final DirectorNotFoundException e) {
+        log.warn("404", e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleMPAARatingNotFound(final MPAARatingNotFoundException e) {
         log.warn("404", e);
         return new ErrorResponse(e.getMessage());
@@ -80,11 +85,11 @@ public class ErrorHandler {
         log.warn("500", e);
         return new ErrorResponse("Произошла непредвиденная ошибка сервера" + Arrays.toString(e.getStackTrace()));
     }
-}
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-class ErrorResponse {
-    private String message;
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final InvalidSearchRequestException e) {
+        log.warn("400", e);
+        return new ErrorResponse(e.getMessage());
+    }
 }

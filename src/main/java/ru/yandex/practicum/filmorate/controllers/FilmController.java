@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -55,7 +56,17 @@ public class FilmController {
     }
 
     @DeleteMapping("/{filmId}")
-    public void delete(@PathVariable int filmId){
+    public void delete(@PathVariable int filmId) {
         filmService.delete(filmId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getSortedFilms(@PathVariable int directorId, @RequestParam String sortBy) {
+        return filmService.getSortedFilms(directorId, sortBy);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query, @RequestParam List<String> by) {
+        return filmService.searchFilms(by, query);
     }
 }

@@ -46,7 +46,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void setGenres(List<Film> films) {
-        String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
+        final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 
         jdbcTemplate.query(
@@ -59,5 +59,10 @@ public class GenreDbStorage implements GenreStorage {
                     film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
                 },
                 films.stream().map(Film::getId).toArray());
+    }
+
+    @Override
+    public List<FilmGenre> getFilmGenres(int filmId, String sqlQuery) {
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, filmId);
     }
 }

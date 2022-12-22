@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmStorage {
+
     Film create(Film film);
 
     int update(Film film);
@@ -22,4 +23,8 @@ public interface FilmStorage {
     List<Film> getCommonFilms(int userId, int friendId);
 
     boolean delete(int filmId);
+
+    List<Film> getSortedFilms(int directorId, String sortBy);
+
+    List<Film> searchFilms(List<String> searchBy, String queriedText);
 }
