@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.yandex.practicum.filmorate.model.ErrorResponse;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exceptions.*;
-import org.springframework.http.HttpStatus;
-import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
@@ -77,5 +77,12 @@ public class ErrorHandler {
     public ErrorResponse handleThrowable(final Throwable e) {
         log.warn("500", e);
         return new ErrorResponse("Произошла непредвиденная ошибка сервера" + Arrays.toString(e.getStackTrace()));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final InvalidSearchRequestException e) {
+        log.warn("400", e);
+        return new ErrorResponse(e.getMessage());
     }
 }

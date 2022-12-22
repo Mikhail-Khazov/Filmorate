@@ -10,8 +10,6 @@ import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +46,6 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void setGenres(List<Film> films) {
-        films.forEach(f -> f.setGenres(new HashSet<>()));
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
 

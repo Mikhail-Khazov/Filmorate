@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.*;
 import lombok.experimental.UtilityClass;
+import ru.yandex.practicum.filmorate.model.*;
 
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @UtilityClass
 public class RowMapper {
