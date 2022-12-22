@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
-import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.model.Film;
-import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.List;
 
@@ -59,6 +59,7 @@ public class FilmService {
     public List<Film> getCommonFilms(int userId, int friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
     }
+
     public void delete(int filmId) {
         if (!filmStorage.delete(filmId)) {
             throw new FilmNotFoundException("Фильм с id: " + filmId + ", не найден");
@@ -73,5 +74,14 @@ public class FilmService {
         directorService.setDirectors(sortedFilms);
         genreService.setGenres(sortedFilms);
         return sortedFilms;
+    }
+
+    public List<Film> searchFilms(List<String> searchBy, String queriedText) {
+        List<Film> searchedFilms = filmStorage.searchFilms(searchBy, queriedText);
+        if (!searchedFilms.isEmpty()) {
+            directorService.setDirectors(searchedFilms);
+            genreService.setGenres(searchedFilms);
+        }
+        return searchedFilms;
     }
 }

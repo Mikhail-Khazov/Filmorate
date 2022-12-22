@@ -1,20 +1,21 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.Director;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import lombok.RequiredArgsConstructor;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
+import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
+import ru.yandex.practicum.filmorate.storage.RowMapper;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-import java.sql.Date;
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Repository
 @RequiredArgsConstructor
@@ -180,5 +181,43 @@ public class FilmDbStorage implements FilmStorage {
 
     private List<Film> getFilms(int directorId, String sqlQuery) {
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, directorId);
+    }
+
+
+    private LinkedHashSet<Integer> getIndexesOfSearchedFilms(SearchBy queriedItem, String queriedText) {
+        LinkedHashSet<Integer> list = new LinkedHashSet<>();
+        String sql = String.format("select id, f_name as %s, d_name as %s " +
+                "from FILMS_VIEW_SEARCH as f ", SearchBy.title, SearchBy.director);
+
+        jdbcTemplate.query(sql, (rs) -> {
+            String str = rs.getString(queriedItem.getValue() + 1);
+            if (str != null && str.trim().toLowerCase().contains(queriedText)) list.add(rs.getInt(1));
+        });
+
+        return list;
+    }
+
+    @Override
+    public List<Film> searchFilms(List<String> searchBy, String queriedText) {
+        Collections.reverse(searchBy);
+        LinkedHashSet<Integer> listFilmIndexes = new LinkedHashSet<>();
+
+        for (String e : searchBy)
+            listFilmIndexes.addAll(getIndexesOfSearchedFilms(SearchBy.toEnum(e), queriedText.trim().toLowerCase()));
+        ArrayList<Integer> arrayFilmIndexes = new ArrayList<>(listFilmIndexes);
+
+        final String inSql = String.join(",", Collections.nCopies(listFilmIndexes.size(), "?"));
+
+        String sqlQuery = String.format("SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.RATING_ID, r.MPA " +
+                "FROM films AS f " +
+                "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "WHERE FILM_ID IN (%s) ", inSql);
+
+        ArrayList<Film> arrayDisorderedFilms = new ArrayList<>(jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, listFilmIndexes.toArray()));
+        HashMap<Integer, Film> mapIDtoFile = new HashMap<>();
+        IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> mapIDtoFile.put(arrayDisorderedFilms.get(v).getId(), arrayDisorderedFilms.get(v)));
+        ArrayList<Film> arrayOrderedFilms = new ArrayList<>();
+        IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> arrayOrderedFilms.add(mapIDtoFile.get(arrayFilmIndexes.get(v))));
+        return arrayOrderedFilms;
     }
 }
