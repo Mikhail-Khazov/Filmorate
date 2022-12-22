@@ -41,6 +41,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleReviewNotFound(final ReviewNotFoundException e) {
+        log.warn("404", e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFound(final UserNotFoundException e) {
         log.warn("404", e);
         return new ErrorResponse(e.getMessage());

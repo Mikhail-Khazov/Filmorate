@@ -13,7 +13,10 @@ import ru.yandex.practicum.filmorate.storage.RowMapper;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -112,15 +115,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
         final String sqlQuery = "SELECT f. *, r. * " +
-                                "FROM films AS f " +
-                                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
-                                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? " +
-                                "INTERSECT SELECT f. *, r. * " +
-                                "FROM films AS f " +
-                                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
-                                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;" ;
+                "FROM films AS f " +
+                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? " +
+                "INTERSECT SELECT f. *, r. * " +
+                "FROM films AS f " +
+                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;";
 
-        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm,userId,friendId);
+        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
         return films;
     }
 

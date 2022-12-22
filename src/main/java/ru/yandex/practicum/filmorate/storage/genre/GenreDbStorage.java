@@ -57,7 +57,7 @@ public class GenreDbStorage implements GenreStorage {
                 (rs) -> {
                     final Film film = filmById.get(rs.getInt("FILM_ID"));
                     film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
-                    },
+                },
                 films.stream().map(Film::getId).toArray());
     }
 }

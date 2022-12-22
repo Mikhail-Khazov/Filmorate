@@ -1,10 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.experimental.UtilityClass;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,6 +36,16 @@ public class RowMapper {
     public static MPAAFilmRating mapRowToMPAAFilmRating(ResultSet rs, int row) throws SQLException {
         return new MPAAFilmRating(rs.getInt("RATING_ID"),
                 rs.getString("MPA")
+        );
+    }
+
+    public static Review mapRowToReview(ResultSet rs, int row) throws SQLException {
+        return new Review(rs.getInt("REVIEW_ID"),
+                rs.getString("CONTENT"),
+                rs.getBoolean("IS_POSITIVE"),
+                rs.getInt("USER_ID"),
+                rs.getInt("FILM_ID"),
+                rs.getInt("USEFULS")
         );
     }
 }
