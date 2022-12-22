@@ -185,7 +185,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private LinkedHashSet<Integer> getIndexesOfSearchedFilms(SearchBy queriedItem, String queriedText) {
         LinkedHashSet<Integer> result = new LinkedHashSet<>();
-        String sqlQuery = String.format("SELECT id, f_name AS %s, d_name AS %s " +
+         final String sqlQuery = String.format("SELECT id, f_name AS %s, d_name AS %s " +
                 "FROM FILMS_VIEW_SEARCH AS f ", SearchBy.TITLE, SearchBy.DIRECTOR);
 
         jdbcTemplate.query(sqlQuery, (rs) -> {
@@ -199,9 +199,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> searchFilms(List<String> srch, String queriedText) {
+    public List<Film> searchFilms(List<String> search, String queriedText) {
         ArrayList<String> searchBy = new ArrayList<>();
-        for(String s : srch) searchBy.add(s.trim().toUpperCase());
+        for(String s : search) searchBy.add(s.trim().toUpperCase());
         Collections.reverse(searchBy);
         queriedText = queriedText.trim().toUpperCase();
         LinkedHashSet<Integer> listFilmIndexes = new LinkedHashSet<>();

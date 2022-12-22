@@ -11,13 +11,16 @@ public enum SearchBy {
     SearchBy(int value) {
         this.value = value;
     }
+
     @Override
-    public String toString(){
+    public String toString() {
         return this.name();
     }
+
     public static SearchBy toEnum(String s) {
-        for (SearchBy e : SearchBy.values())
+        for (SearchBy e : SearchBy.values()) {
             if (e.name().equals(s)) return e;
+        }
         throw new InvalidSearchRequestException();
     }
 }
