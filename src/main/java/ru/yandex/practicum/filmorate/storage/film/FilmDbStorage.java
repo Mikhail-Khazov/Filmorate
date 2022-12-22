@@ -130,15 +130,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
         final String sqlQuery = "SELECT f. *, r. * " +
-                                "FROM films AS f " +
-                                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
-                                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? " +
-                                "INTERSECT SELECT f. *, r. * " +
-                                "FROM films AS f " +
-                                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
-                                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;" ;
+                "FROM films AS f " +
+                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? " +
+                "INTERSECT SELECT f. *, r. * " +
+                "FROM films AS f " +
+                "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;";
 
-        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm,userId,friendId);
+        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
         return films;
     }
 
@@ -183,18 +183,19 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, directorId);
     }
 
-
     private LinkedHashSet<Integer> getIndexesOfSearchedFilms(SearchBy queriedItem, String queriedText) {
-        LinkedHashSet<Integer> list = new LinkedHashSet<>();
-        String sql = String.format("select id, f_name as %s, d_name as %s " +
-                "from FILMS_VIEW_SEARCH as f ", SearchBy.title, SearchBy.director);
+        LinkedHashSet<Integer> result = new LinkedHashSet<>();
+        String sqlQuery = String.format("SELECT id, f_name AS %s, d_name AS %s " +
+                "FROM FILMS_VIEW_SEARCH AS f ", SearchBy.title, SearchBy.director);
 
-        jdbcTemplate.query(sql, (rs) -> {
-            String str = rs.getString(queriedItem.getValue() + 1);
-            if (str != null && str.trim().toLowerCase().contains(queriedText)) list.add(rs.getInt(1));
+        jdbcTemplate.query(sqlQuery, (rs) -> {
+            String str = rs.getString(queriedItem.value + 1);
+            if (str != null && str.trim().toLowerCase().contains(queriedText)) {
+                result.add(rs.getInt(1));
+            }
         });
 
-        return list;
+        return result;
     }
 
     @Override
@@ -202,15 +203,16 @@ public class FilmDbStorage implements FilmStorage {
         Collections.reverse(searchBy);
         LinkedHashSet<Integer> listFilmIndexes = new LinkedHashSet<>();
 
-        for (String e : searchBy)
+        for (String e : searchBy) {
             listFilmIndexes.addAll(getIndexesOfSearchedFilms(SearchBy.toEnum(e), queriedText.trim().toLowerCase()));
-        ArrayList<Integer> arrayFilmIndexes = new ArrayList<>(listFilmIndexes);
+        }
 
+        ArrayList<Integer> arrayFilmIndexes = new ArrayList<>(listFilmIndexes);
         final String inSql = String.join(",", Collections.nCopies(listFilmIndexes.size(), "?"));
 
-        String sqlQuery = String.format("SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.RATING_ID, r.MPA " +
+        String sqlQuery = String.format("SELECT *, m.MPA " +
                 "FROM films AS f " +
-                "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "LEFT JOIN mpa AS m ON f.RATING_ID = m.RATING_ID " +
                 "WHERE FILM_ID IN (%s) ", inSql);
 
         ArrayList<Film> arrayDisorderedFilms = new ArrayList<>(jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, listFilmIndexes.toArray()));

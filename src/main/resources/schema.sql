@@ -75,6 +75,6 @@ CREATE TABLE IF NOT EXISTS liked
 CREATE VIEW IF NOT EXISTS FILMS_VIEW_SEARCH AS (
     SELECT f.FILM_ID AS id, f.FILM_NAME AS f_name, d.DIRECTOR_NAME AS d_name
     FROM films AS f
-    LEFT JOIN film_directors AS fd ON f.FILM_ID=fd.FILM_ID
-    LEFT JOIN directors AS d ON d.DIRECTOR_ID=fd.DIRECTOR_ID
+    LEFT JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID
+    LEFT JOIN directors AS d ON d.DIRECTOR_ID = fd.DIRECTOR_ID
 );
