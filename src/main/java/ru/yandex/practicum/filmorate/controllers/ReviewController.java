@@ -61,4 +61,3 @@ public class ReviewController {
         reviewService.removeLike(id, userId);
     }
 }
-

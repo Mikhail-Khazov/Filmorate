@@ -37,7 +37,6 @@ public class UserService {
         return userStorage.getAll();
     }
 
-
     private void nameCheck(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
