@@ -41,7 +41,7 @@ public class ReviewController {
         return reviewService.getAll(filmId, count);
     }
 
-    @PutMapping("/{id}/like/{userId}")                                              //TODO исключить возможность ставить лайк и дизлайк одновременно
+    @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
         reviewService.addLike(id, userId);
     }
@@ -52,13 +52,13 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable int id, @PathVariable int userId) {              //TODO Метод должен удалять и лайк и дизлайк
+    public void removeLike(@PathVariable int id, @PathVariable int userId) {
         reviewService.removeLike(id, userId);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void removeDislike(@PathVariable int id, @PathVariable int userId) {
-        reviewService.removeDislike(id, userId);
+        reviewService.removeLike(id, userId);
     }
 }
 

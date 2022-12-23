@@ -51,7 +51,7 @@ public class RowMapper {
                 rs.getBoolean("IS_POSITIVE"),
                 rs.getInt("USER_ID"),
                 rs.getInt("FILM_ID"),
-                rs.getInt("USEFULS")
+                rs.getInt("USEFULNESS")
         );
     }
 }

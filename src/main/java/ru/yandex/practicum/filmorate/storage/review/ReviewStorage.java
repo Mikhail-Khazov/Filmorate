@@ -11,7 +11,7 @@ public interface ReviewStorage {
 
     Review create(Review review);
 
-    int update(Review review);
+    Optional<Review> update(Review review);
 
     boolean delete(int id);
 
@@ -24,6 +24,4 @@ public interface ReviewStorage {
     void addDislike(int id, int userId);
 
     void removeLike(int id, int userId);
-
-    void removeDislike(int id, int userId);
 }

@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Optional<Review> getById(int id) {
-        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULS " +
+        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULNESS " +
                 "FROM reviews AS r " +
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
                 "WHERE r.REVIEW_ID = ? " +
@@ -36,7 +37,7 @@ public class ReviewDbStorage implements ReviewStorage {
         jdbcTemplate.update((connection) -> {
             PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"REVIEW_ID"});
             statement.setString(1, review.getContent());
-            statement.setBoolean(2, review.isPositive());
+            statement.setBoolean(2, review.getIsPositive());
             statement.setInt(3, review.getUserId());
             statement.setInt(4, review.getFilmId());
             return statement;
@@ -46,19 +47,17 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public int update(Review review) {
+    public Optional<Review> update(Review review) {
         final String sqlQuery = "UPDATE reviews " +
-                "SET CONTENT = ?, IS_POSITIVE = ?, USER_ID = ?, FILM_ID = ? " +
+                "SET CONTENT = ?, IS_POSITIVE = ?" +
                 "WHERE REVIEW_ID = ?";
 
-        int updatedRowCount = jdbcTemplate.update(sqlQuery,
+        jdbcTemplate.update(sqlQuery,
                 review.getContent(),
-                review.isPositive(),
-                review.getUserId(),
-                review.getFilmId(),
+                review.getIsPositive(),
                 review.getReviewId()
         );
-        return updatedRowCount;
+        return getById(review.getReviewId());
     }
 
     @Override
@@ -69,21 +68,24 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAll(int count) {
-        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULS " +
+        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULNESS " +
                 "FROM reviews AS r " +
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
                 "GROUP BY r.REVIEW_ID " +
+                "ORDER BY USEFULNESS DESC " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, count);
+        List<Review> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, count);
+        return films.stream().sorted((a, b) -> b.getUseful() - a.getUseful()).collect(Collectors.toList());
     }
 
     @Override
     public List<Review> getFilmReviews(int id, int count) {
-        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULS " +
+        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULNESS " +
                 "FROM reviews AS r " +
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
                 "WHERE FILM_ID = ? " +
                 "GROUP BY r.REVIEW_ID " +
+                "ORDER BY USEFULNESS DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, id, count);
     }
@@ -102,12 +104,6 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public void removeLike(int id, int userId) {
-        final String sqlQuery = "INSERT INTO useful (REVIEW_ID, USER_ID, USEFUL) values (?, ?, 0)";
-        jdbcTemplate.update(sqlQuery, id, userId);
-    }
-
-    @Override
-    public void removeDislike(int id, int userId) {                     //TODO delete method
         final String sqlQuery = "INSERT INTO useful (REVIEW_ID, USER_ID, USEFUL) values (?, ?, 0)";
         jdbcTemplate.update(sqlQuery, id, userId);
     }

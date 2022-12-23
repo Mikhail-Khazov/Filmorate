@@ -26,19 +26,19 @@ public class ReviewService {
 
     public Review create(Review review) {
         //TODO
-//        userService.get(review.getUserId());
-//        filmService.get(review.getFilmId());
+        validationReview(review);
         return reviewStorage.create(review);
     }
 
     public Review update(Review review) {
-        if (reviewStorage.update(review) > 0) return review;
-        else throw new ReviewNotFoundException("Отзыв с id: " + review.getReviewId() + ", не найден");
+        return reviewStorage.update(review).orElseThrow(
+                () -> new ReviewNotFoundException("Отзыв с id: " + review.getReviewId() + ", не найден")
+        );
     }
 
     public void delete(int id) {
-        if(!reviewStorage.delete(id)){
-         throw new ReviewNotFoundException("Отзыв с id: " + id + ", не найден");
+        if (!reviewStorage.delete(id)) {
+            throw new ReviewNotFoundException("Отзыв с id: " + id + ", не найден");
         }
     }
 
@@ -47,7 +47,7 @@ public class ReviewService {
         else return reviewStorage.getFilmReviews(id, count);
     }
 
-    public void addLike(int id, int userId) {                   //TODO исключить возможность ставить лайк и дизлайк одновременно
+    public void addLike(int id, int userId) {
         reviewStorage.addLike(id, userId);
     }
 
@@ -56,10 +56,11 @@ public class ReviewService {
     }
 
     public void removeLike(int id, int userId) {
-        reviewStorage.removeLike(id, userId);                      //TODO Метод должен удалять и лайк и дизлайк
+        reviewStorage.removeLike(id, userId);
     }
 
-    public void removeDislike(int id, int userId) {
-        reviewStorage.removeLike(id, userId);
+    private void validationReview(Review review) {
+        userService.get(review.getUserId());
+        filmService.get(review.getFilmId());
     }
 }
