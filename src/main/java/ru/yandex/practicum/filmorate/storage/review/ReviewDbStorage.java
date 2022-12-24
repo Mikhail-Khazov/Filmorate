@@ -68,19 +68,19 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAll(int count) {
-        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULNESS " +
+        final String sqlQuery = "SELECT r. *, IFNULL(SUM(u.USEFUL), 0) AS USEFULNESS " +
                 "FROM reviews AS r " +
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
                 "GROUP BY r.REVIEW_ID " +
                 "ORDER BY USEFULNESS DESC " +
                 "LIMIT ?";
-        List<Review> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, count);
-        return films.stream().sorted((a, b) -> b.getUseful() - a.getUseful()).collect(Collectors.toList());
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, count);
+        
     }
 
     @Override
     public List<Review> getFilmReviews(int id, int count) {
-        final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULNESS " +
+        final String sqlQuery = "SELECT r. *, IFNULL(SUM(u.USEFUL), 0) AS USEFULNESS " +
                 "FROM reviews AS r " +
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
                 "WHERE FILM_ID = ? " +
@@ -105,7 +105,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public void removeLike(int id, int userId) {
-        final String sqlQuery = "INSERT INTO useful (REVIEW_ID, USER_ID, USEFUL) values (?, ?, 0)";
+        final String sqlQuery = "DELETE FROM useful WHERE (REVIEW_ID = ?, USER_ID = ?) ";
         jdbcTemplate.update(sqlQuery, id, userId);
     }
 }
