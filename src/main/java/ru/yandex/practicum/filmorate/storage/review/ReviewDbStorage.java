@@ -75,7 +75,6 @@ public class ReviewDbStorage implements ReviewStorage {
                 "ORDER BY USEFULNESS DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, count);
-        
     }
 
     @Override
