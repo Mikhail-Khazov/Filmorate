@@ -87,8 +87,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "GROUP BY r.REVIEW_ID " +
                 "ORDER BY USEFULNESS DESC " +
                 "LIMIT ?";
-        List<Review> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, id, count);
-        return films.stream().sorted((a, b) -> b.getUseful() - a.getUseful()).collect(Collectors.toList());
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, id, count);
     }
 
     @Override
