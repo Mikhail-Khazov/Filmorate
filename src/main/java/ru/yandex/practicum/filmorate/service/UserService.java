@@ -17,7 +17,6 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
     private final LikeService likeService;
-
     private final FilmService filmService;
 
     public User get(int userId) {
@@ -62,20 +61,14 @@ public class UserService {
     }
 
     public List<Film> getRecommendations(int userId) {
-
         List<Integer> userLikes = likeService.getListOfLikes(userId);
         List<Film> recommendationsFilms = new ArrayList<>();
-
-        if (userLikes.size() == 0) {
-            return recommendationsFilms;
-        }
-
+        List<Integer> similarFilmsId = new ArrayList<>();
+        User mostSimilarUser = new User();
         List<User> users = getAll();
         users.remove(get(userId));
 
-        List<Integer> similarFilmsId = new ArrayList<>();
-
-        User mostSimilarUser = null;
+        if (userLikes.size() == 0) return recommendationsFilms;
 
         for (User user : users) {
             List<Integer> currentUserLikes = likeService.getListOfLikes(user.getId());
@@ -86,18 +79,13 @@ public class UserService {
                 mostSimilarUser = user;
             }
         }
-        if (similarFilmsId.size() == 0) {
-            return recommendationsFilms;
-        }
-
+        if (similarFilmsId.size() == 0) return recommendationsFilms;
         similarFilmsId = likeService.getListOfLikes(mostSimilarUser.getId());
         similarFilmsId.removeAll(userLikes);
 
-        for (int i : similarFilmsId) {
-            recommendationsFilms.add(filmService.get(i));
+        for (int id : similarFilmsId) {
+            recommendationsFilms.add(filmService.get(id));
         }
-
         return recommendationsFilms;
-
     }
 }
