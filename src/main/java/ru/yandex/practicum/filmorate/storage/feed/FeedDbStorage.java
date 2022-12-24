@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.util.List;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 @Slf4j
 public class FeedDbStorage {
