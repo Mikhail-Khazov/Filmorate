@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.feed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FeedRow;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.RowMapper;
