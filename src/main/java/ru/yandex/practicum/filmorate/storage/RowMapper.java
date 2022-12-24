@@ -44,4 +44,14 @@ public class RowMapper {
                 rs.getString("MPA")
         );
     }
+
+    public static Review mapRowToReview(ResultSet rs, int row) throws SQLException {
+        return new Review(rs.getInt("REVIEW_ID"),
+                rs.getString("CONTENT"),
+                rs.getBoolean("IS_POSITIVE"),
+                rs.getInt("USER_ID"),
+                rs.getInt("FILM_ID"),
+                rs.getInt("USEFULNESS")
+        );
+    }
 }
