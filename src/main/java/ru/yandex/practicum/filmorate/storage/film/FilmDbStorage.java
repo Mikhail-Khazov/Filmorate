@@ -138,19 +138,25 @@ public class FilmDbStorage implements FilmStorage {
                 "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;";
 
-        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
-        return films;
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
     }
 
-    public List<Film> getTopFilms(int count) {
-        final String sqlQuery = "SELECT f. *, r.MPA " +
+    public List<Film> getTopFilms(int count, Integer genreId, Integer year) {
+        String sqlQueryIfGenreId = "AND fg.GENRE_ID = ? ";
+        if (genreId == null) sqlQueryIfGenreId = "";
+        final String sqlQuery = "SELECT f.*, r.MPA " +
                 "FROM films AS f " +
                 "LEFT JOIN liked AS l ON f.FILM_ID = l.FILM_ID " +
-                "LEFT JOIN  mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
+                "LEFT JOIN film_genre AS fg ON f.FILM_ID = fg.FILM_ID " +
+                "LEFT JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID " +
+                "WHERE EXTRACT(year FROM f.RELEASE_DATE) LIKE ifnull(?, '%') " +
+                sqlQueryIfGenreId +
                 "GROUP BY f.FILM_ID " +
-                "ORDER BY COUNT (l.USER_ID) DESC " +
+                "ORDER BY COUNT(l.USER_ID) DESC " +
                 "LIMIT ? ";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, count);
+        if (genreId == null) return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, count);
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, genreId, count);
     }
 
     @Override

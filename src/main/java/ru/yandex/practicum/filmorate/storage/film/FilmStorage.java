@@ -16,7 +16,7 @@ public interface FilmStorage {
 
     List<Film> getAll();
 
-    List<Film> getTopFilms(int count);
+    List<Film> getTopFilms(int count, Integer genreId, Integer year);
 
     MPAAFilmRating getMpaaRating(int filmId);
 
