@@ -138,14 +138,13 @@ public class FilmDbStorage implements FilmStorage {
                 "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;";
 
-        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
-        return films;
+        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
     }
 
     public List<Film> getTopFilms(int count, Integer genreId, Integer year) {
         String sqlQueryIfGenreId = "AND fg.GENRE_ID = ? ";
         if (genreId == null) sqlQueryIfGenreId = "";
-        String sqlQuery = "SELECT f.*, r.MPA " +
+        final String sqlQuery = "SELECT f.*, r.MPA " +
                 "FROM films AS f " +
                 "LEFT JOIN liked AS l ON f.FILM_ID = l.FILM_ID " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
@@ -154,12 +153,11 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE EXTRACT(year FROM f.RELEASE_DATE) LIKE ifnull(?, '%') " +
                 sqlQueryIfGenreId +
                 "GROUP BY f.FILM_ID " +
-                "ORDER BY COUNT (l.USER_ID) DESC " +
+                "ORDER BY COUNT(l.USER_ID) DESC " +
                 "LIMIT ? ";
         if (genreId == null) return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, count);
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, genreId, count);
     }
-
 
     @Override
     public boolean delete(int filmId) {
