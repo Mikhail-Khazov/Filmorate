@@ -28,7 +28,6 @@ public class FeedLine {
 
     private final JdbcTemplate jdbcTemplate;
     private final FeedDbStorage feedDbStorage;
-    private HashMap<Integer, Integer> map = new HashMap<>();
 
     private void insertData(int idUser, int idEntity, String event, String operation) {
         final String sqlQuery = "INSERT INTO feed (USER_ID, ENTITY_ID, EVENT_TYPE, OPERATION, TIMELONG) " +
