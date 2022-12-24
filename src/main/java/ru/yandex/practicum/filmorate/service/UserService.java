@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,6 +16,9 @@ import java.util.List;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final LikeService likeService;
+
+    private final FilmService filmService;
 
     public User get(int userId) {
         User user = userStorage.get(userId).orElseThrow(
@@ -54,5 +59,45 @@ public class UserService {
         if (!userStorage.delete(userId)) {
             throw new UserNotFoundException("Пользователь с id: " + userId + ", не найден");
         }
+    }
+
+    public List<Film> getRecommendations(int userId) {
+
+        List<Integer> userLikes = likeService.getListOfLikes(userId);
+        List<Film> recommendationsFilms = new ArrayList<>();
+
+        if (userLikes.size() == 0) {
+            return recommendationsFilms;
+        }
+
+        List<User> users = getAll();
+        users.remove(get(userId));
+
+        List<Integer> similarFilmsId = new ArrayList<>();
+
+        User mostSimilarUser = null;
+
+        for (User user : users) {
+            List<Integer> currentUserLikes = likeService.getListOfLikes(user.getId());
+            currentUserLikes.retainAll(userLikes);
+
+            if (currentUserLikes.size() > similarFilmsId.size()) {
+                similarFilmsId = currentUserLikes;
+                mostSimilarUser = user;
+            }
+        }
+        if (similarFilmsId.size() == 0) {
+            return recommendationsFilms;
+        }
+
+        similarFilmsId = likeService.getListOfLikes(mostSimilarUser.getId());
+        similarFilmsId.removeAll(userLikes);
+
+        for (int i : similarFilmsId) {
+            recommendationsFilms.add(filmService.get(i));
+        }
+
+        return recommendationsFilms;
+
     }
 }

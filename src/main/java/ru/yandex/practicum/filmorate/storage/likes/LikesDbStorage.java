@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class LikesDbStorage implements LikesStorage {
@@ -27,5 +29,11 @@ public class LikesDbStorage implements LikesStorage {
         if (status != 1) {
             throw new UserNotFoundException();
         }
+    }
+
+    @Override
+    public List<Integer> getListOfLikes(int userId) {
+        String sqlQuery = "SELECT FILM_ID FROM liked WHERE USER_ID = ?;";
+        return jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
     }
 }
