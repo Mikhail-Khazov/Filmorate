@@ -12,19 +12,15 @@ import java.util.List;
 public class LikesDbStorage implements LikesStorage {
     private final JdbcTemplate jdbcTemplate;
 
-
     @Override
     public void addLike(int filmId, int userId) {
-        String sqlQuery = "INSERT INTO liked (FILM_ID, USER_ID) VALUES (?, ?)";
-        int status = jdbcTemplate.update(sqlQuery, filmId, userId);
-        if (status != 1) {
-            throw new UserNotFoundException();
-        }
+        final String sqlQuery = "INSERT INTO liked (FILM_ID, USER_ID) VALUES (?, ?) ON CONFLICT DO NOTHING ";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
     }
 
     @Override
     public void deleteLike(int filmId, int userId) {
-        String sqlQuery = "DELETE FROM liked WHERE FILM_ID = ? AND USER_ID = ?";
+        final String sqlQuery = "DELETE FROM liked WHERE FILM_ID = ? AND USER_ID = ?";
         int status = jdbcTemplate.update(sqlQuery, filmId, userId);
         if (status != 1) {
             throw new UserNotFoundException();
@@ -33,7 +29,7 @@ public class LikesDbStorage implements LikesStorage {
 
     @Override
     public List<Integer> getListOfLikes(int userId) {
-        String sqlQuery = "SELECT FILM_ID FROM liked WHERE USER_ID = ?;";
+        final String sqlQuery = "SELECT FILM_ID FROM liked WHERE USER_ID = ?;";
         return jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
     }
 }

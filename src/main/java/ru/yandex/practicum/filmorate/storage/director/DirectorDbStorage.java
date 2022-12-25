@@ -63,6 +63,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public void setDirectors(List<Film> films) {
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
+        if(inSql.isEmpty()) return;
 
         jdbcTemplate.query(
                 String.format("SELECT fd.FILM_ID, fd.DIRECTOR_ID, d.DIRECTOR_NAME " +
