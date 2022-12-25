@@ -1,2 +1,2 @@
 ## Структура проекта Filmorate:
-![image](https://user-images.githubusercontent.com/92729800/209474943-a7126b76-3b5e-4c4e-8a4f-ff7a547b1808.png)
+![image](https://user-images.githubusercontent.com/92729800/209476346-e43713bc-7ae3-43a9-8346-6ee26aab4d2b.png)
