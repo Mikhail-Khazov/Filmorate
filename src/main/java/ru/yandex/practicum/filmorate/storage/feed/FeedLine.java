@@ -1,8 +1,3 @@
-/*
-class FeedLine
-- Формирование ленты событий
-- Записи сохраняются в таблице feed файла schema.sql
-**/
 package ru.yandex.practicum.filmorate.storage.feed;
 
 import lombok.RequiredArgsConstructor;
@@ -17,8 +12,13 @@ import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.PreparedStatement;
 import java.time.Instant;
-import java.util.HashMap;
 
+
+/**
+ * class FeedLine
+ * - Формирование ленты событий
+ * - Записи сохраняются в таблице feed файла schema.sql
+ */
 
 @Aspect
 @Component
@@ -86,5 +86,4 @@ public class FeedLine {
         log.info("//////Лента новостей////// Ревью id_1={} пользователя id_2={} обновлено", review.getReviewId(), feedDbStorage.getIdAuthor(review.getReviewId()));
         insertData(feedDbStorage.getIdAuthor(review.getReviewId()), review.getReviewId(), EventType.REVIEW.toString(), Operation.UPDATE.toString());
     }
-
 }

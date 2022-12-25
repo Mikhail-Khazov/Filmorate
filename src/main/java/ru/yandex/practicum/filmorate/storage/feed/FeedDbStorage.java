@@ -19,20 +19,18 @@ public class FeedDbStorage {
 
     //Данные ленты новостей для одного пользователя
     public List<FeedRow> getByUserId(int idUser) {
-        log.info("Запрос на получение ленты новостей пользователя id=" + idUser);
-        userService.get(idUser);
-
-        String sqlQuery = "SELECT * " +
+        final String sqlQuery = "SELECT * " +
                 "FROM feed " +
                 "WHERE feed.USER_ID = ? ";
+        log.info("Запрос на получение ленты новостей пользователя id=" + idUser);
+        userService.get(idUser);
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFeedRow, idUser);
     }
 
     public int getIdAuthor(int idReview) {
-        final String sqlQuery = String.format("SELECT USER_ID " +
+        final String sqlQuery = "SELECT USER_ID " +
                 "FROM feed " +
-                "WHERE EVENT_TYPE='REVIEW' AND OPERATION='ADD' AND ENTITY_ID=? ");
-
+                "WHERE EVENT_TYPE = 'REVIEW' AND OPERATION = 'ADD' AND ENTITY_ID = ? ";
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class, idReview);
     }
 }
