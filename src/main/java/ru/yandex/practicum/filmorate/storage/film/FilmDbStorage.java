@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Repository
@@ -149,7 +150,6 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN liked AS l ON f.FILM_ID = l.FILM_ID " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "LEFT JOIN film_genre AS fg ON f.FILM_ID = fg.FILM_ID " +
-                "LEFT JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID " +
                 "WHERE EXTRACT(year FROM f.RELEASE_DATE) LIKE ifnull(?, '%') " +
                 sqlQueryIfGenreId +
                 "GROUP BY f.FILM_ID " +
@@ -189,32 +189,35 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, directorId);
     }
 
-    private LinkedHashSet<Integer> getIndexesOfSearchedFilms(SearchBy queriedItem, String queriedText) {
-        LinkedHashSet<Integer> result = new LinkedHashSet<>();
-         final String sqlQuery = String.format("SELECT id, f_name AS %s, d_name AS %s " +
+    private List<Integer> getIndexesOfSearchedFilms(List<String> search, String queriedText) {
+        ArrayList<LinkedHashSet<Integer>> result = new ArrayList<>();
+        Arrays.stream(SearchBy.values()).forEach((v) -> result.add(new LinkedHashSet<>()));
+        final String sqlQuery = String.format("SELECT id, f_name AS %s, d_name AS %s " +
                 "FROM FILMS_VIEW_SEARCH AS f ", SearchBy.TITLE, SearchBy.DIRECTOR);
 
         jdbcTemplate.query(sqlQuery, (rs) -> {
-            String str = rs.getString(queriedItem.value + 1);
-            if (str != null && str.trim().toUpperCase().contains(queriedText)) {
-                result.add(rs.getInt(1));
+            for (String s : search) {
+                int iSearch = SearchBy.toEnum(s).value;
+                String str = rs.getString(iSearch + 1);
+                if (str != null && str.trim().toUpperCase().contains(queriedText)) {
+                    result.get(iSearch - 1).add(rs.getInt(1));
+                }
             }
         });
+        LinkedHashSet<Integer> listFilmIndexes = new LinkedHashSet<>();
+        for (var s : search) listFilmIndexes.addAll(result.get(SearchBy.toEnum(s).value - 1));
 
-        return result;
+        return listFilmIndexes.stream().distinct().collect(Collectors.toList());
     }
 
     @Override
     public List<Film> searchFilms(List<String> search, String queriedText) {
         ArrayList<String> searchBy = new ArrayList<>();
-        for(String s : search) searchBy.add(s.trim().toUpperCase());
+        for (String s : search) searchBy.add(s.trim().toUpperCase());
         Collections.reverse(searchBy);
         queriedText = queriedText.trim().toUpperCase();
-        LinkedHashSet<Integer> listFilmIndexes = new LinkedHashSet<>();
 
-        for (String e : searchBy) {
-            listFilmIndexes.addAll(getIndexesOfSearchedFilms(SearchBy.toEnum(e), queriedText));
-        }
+        List<Integer> listFilmIndexes = getIndexesOfSearchedFilms(searchBy, queriedText);
 
         ArrayList<Integer> arrayFilmIndexes = new ArrayList<>(listFilmIndexes);
         final String inSql = String.join(",", Collections.nCopies(listFilmIndexes.size(), "?"));

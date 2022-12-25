@@ -54,4 +54,14 @@ public class RowMapper {
                 rs.getInt("USEFULNESS")
         );
     }
+
+    public static FeedRow mapRowToFeedRow(ResultSet rs, int row) throws SQLException {
+        return new FeedRow(rs.getInt("EVENT_ID"),
+                rs.getInt("USER_ID"),
+                rs.getInt("ENTITY_ID"),
+                rs.getString("EVENT_TYPE"),
+                rs.getString("OPERATION"),
+                rs.getLong("TIMELONG")
+        );
+    }
 }
