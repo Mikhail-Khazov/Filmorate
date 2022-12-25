@@ -221,6 +221,7 @@ public class FilmDbStorage implements FilmStorage {
 
         ArrayList<Integer> arrayFilmIndexes = new ArrayList<>(listFilmIndexes);
         final String inSql = String.join(",", Collections.nCopies(listFilmIndexes.size(), "?"));
+        if(inSql.isEmpty()) return List.of();
 
         String sqlQuery = String.format("SELECT *, m.MPA " +
                 "FROM films AS f " +

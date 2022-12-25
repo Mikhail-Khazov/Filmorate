@@ -48,7 +48,7 @@ public class GenreDbStorage implements GenreStorage {
     public void setGenres(List<Film> films) {
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
-
+        if(inSql.isEmpty()) return;
         jdbcTemplate.query(
                 String.format("SELECT fg.FILM_ID, fg.GENRE_ID, gn.TITLE " +
                         "FROM film_Genre AS fg " +

@@ -15,11 +15,15 @@ public class LikesDbStorage implements LikesStorage {
 
     @Override
     public void addLike(int filmId, int userId) {
-        String sqlQuery = "INSERT INTO liked (FILM_ID, USER_ID) VALUES (?, ?)";
+        //        jdbcTemplate.update("DELETE from liked WHERE FILM_ID=? AND USER_ID=? ", filmId, userId);
+        String sqlQuery = "INSERT INTO liked (FILM_ID, USER_ID) VALUES (?, ?) ON CONFLICT DO NOTHING ";
         int status = jdbcTemplate.update(sqlQuery, filmId, userId);
+/*
         if (status != 1) {
             throw new UserNotFoundException();
         }
+
+ */
     }
 
     @Override
