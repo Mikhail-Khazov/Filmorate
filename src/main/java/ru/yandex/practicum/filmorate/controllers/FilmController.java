@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}")
-    public Film get(@PathVariable int filmId) {
+    public Film get(@PathVariable Long filmId) {
         return filmService.get(filmId);
     }
 
@@ -48,22 +47,22 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}/mpa")
-    public MPAAFilmRating getRating(@PathVariable int filmId) {
+    public MPAAFilmRating getRating(@PathVariable Long filmId) {
         return filmService.getRating(filmId);
     }
 
     @GetMapping("/common")
-    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+    public List<Film> getCommonFilms(@RequestParam Long userId, @RequestParam Long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
 
     @DeleteMapping("/{filmId}")
-    public void delete(@PathVariable int filmId) {
+    public void delete(@PathVariable Long filmId) {
         filmService.delete(filmId);
     }
 
     @GetMapping("/director/{directorId}")
-    public List<Film> getSortedFilms(@PathVariable int directorId, @RequestParam String sortBy) {
+    public List<Film> getSortedFilms(@PathVariable Long directorId, @RequestParam String sortBy) {
         return filmService.getSortedFilms(directorId, sortBy);
     }
 

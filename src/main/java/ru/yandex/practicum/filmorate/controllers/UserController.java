@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User get(@PathVariable int userId) {
+    public User get(@PathVariable Long userId) {
         return userService.get(userId);
     }
 
@@ -36,12 +36,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void delete(@PathVariable int userId) {
+    public void delete(@PathVariable Long userId) {
         userService.delete(userId);
     }
 
     @GetMapping("/{userId}/recommendations")
-    public List<Film> getRecommendations(@PathVariable int userId) {
+    public List<Film> getRecommendations(@PathVariable Long userId) {
         return userService.getRecommendations(userId);
     }
 }

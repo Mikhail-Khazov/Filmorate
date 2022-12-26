@@ -18,7 +18,7 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(of = "id")
 public class Film {
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Название фильма не должно быть пустым")
     private String name;
@@ -40,7 +40,7 @@ public class Film {
     private Set<FilmGenre> genres;
     private Set<Director> directors;
 
-    public Film(int id, String name, String description, LocalDate releaseDate, long duration, MPAAFilmRating mpa) {
+    public Film(Long id, String name, String description, LocalDate releaseDate, long duration, MPAAFilmRating mpa) {
         this.id = id;
         this.name = name;
         this.description = description;

@@ -11,15 +11,15 @@ import java.util.List;
 public class LikeService {
     private final LikesStorage likesStorage;
 
-    public void addLike(int filmId, int userId) {
+    public void addLike(Long filmId, Long userId) {
         likesStorage.addLike(filmId, userId);
     }
 
-    public void deleteLike(int filmId, int userId) {
+    public void deleteLike(Long filmId, Long userId) {
         likesStorage.deleteLike(filmId, userId);
     }
 
-    public List<Integer> getListOfLikes(int userId) {
+    public List<Long> getListOfLikes(Long userId) {
         return likesStorage.getListOfLikes(userId);
     }
 }

@@ -21,6 +21,6 @@ public enum SearchBy {
         for (SearchBy e : SearchBy.values()) {
             if (e.name().equals(s)) return e;
         }
-        throw new InvalidSearchRequestException();
+        throw new InvalidSearchRequestException(" type 'SearchBy' cast error ");
     }
 }

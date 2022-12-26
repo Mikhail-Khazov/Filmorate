@@ -14,7 +14,7 @@ import java.util.List;
 public class FeedService {
     private final FeedDbStorage feedStorage;
 
-    public List<FeedRow> getByUserId(int id) {
+    public List<FeedRow> getByUserId(Long id) {
         log.info("Запрос на получение ленты новостей пользователя id=" + id);
         return feedStorage.getByUserId(id);
     }

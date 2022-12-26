@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class Review {
 
-    private int reviewId;
+    private Long reviewId;
 
     @NotBlank(message = "Отзыв не может быть пустым")
     @Size(max = 200, message = "Отзыв должен быть не более 200 символов")
@@ -26,10 +26,10 @@ public class Review {
     private Boolean isPositive;
 
     @NotNull(message = "Не указан id пользователя")
-    private Integer userId;
+    private Long userId;
 
     @NotNull(message = "Не указан id фильма")
-    private Integer filmId;
+    private Long filmId;
 
     private int useful;
 }

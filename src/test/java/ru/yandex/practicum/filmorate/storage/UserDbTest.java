@@ -27,27 +27,24 @@ public class UserDbTest {
     @Autowired
     private final UserController userController;
 
-    private User johnSample;
-    private User janeSample;
-
     @BeforeEach
     public void initialize() {
-        johnSample = User.builder().email("doe@yandex.ru").login("JD").name("John Doe").birthday(LocalDate.parse("1965-01-03")).build();
+        User johnSample = User.builder().email("doe@yandex.ru").login("JD").name("John Doe").birthday(LocalDate.parse("1965-01-03")).build();
         userController.create(johnSample);
-        janeSample = User.builder().email("jane70@gmail.com").login("MrsJD").name("Jane Doe").birthday(LocalDate.parse("1970-06-23")).build();
+        User janeSample = User.builder().email("jane70@gmail.com").login("MrsJD").name("Jane Doe").birthday(LocalDate.parse("1970-06-23")).build();
         userController.create(janeSample);
     }
 
     @Test
     void shouldUpdatedUserFromDb() {
-        userController.update(User.builder().id(1).email("doe@rambler.ru").login("JCD").name("John Collins Doe").birthday(LocalDate.parse("1983-11-03")).build());
-        Optional<User> userOptional = userDbStorage.get(1);
+        userController.update(User.builder().id(1L).email("doe@rambler.ru").login("JCD").name("John Collins Doe").birthday(LocalDate.parse("1983-11-03")).build());
+        Optional<User> userOptional = userDbStorage.get(1L);
 
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
                         assertThat(user)
-                                .hasFieldOrPropertyWithValue("id", 1)
+                                .hasFieldOrPropertyWithValue("id", 1L)
                                 .hasFieldOrPropertyWithValue("email", "doe@rambler.ru")
                                 .hasFieldOrPropertyWithValue("login", "JCD")
                                 .hasFieldOrPropertyWithValue("name", "John Collins Doe")
@@ -57,13 +54,13 @@ public class UserDbTest {
 
     @Test
     void shouldReturnUserFromDb() {
-        Optional<User> userOptional = userDbStorage.get(1);
+        Optional<User> userOptional = userDbStorage.get(1L);
 
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
                         assertThat(user)
-                                .hasFieldOrPropertyWithValue("id", 1)
+                                .hasFieldOrPropertyWithValue("id", 1L)
                                 .hasFieldOrPropertyWithValue("email", "doe@yandex.ru")
                                 .hasFieldOrPropertyWithValue("login", "JD")
                                 .hasFieldOrPropertyWithValue("name", "John Doe")

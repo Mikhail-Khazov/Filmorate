@@ -32,39 +32,39 @@ public class FilmDbTest {
     @BeforeEach
     public void initialize() {
         filmController.create(new Film(
-                1,
+                1L,
                 "Casablanca",
                 "Where Love Cuts as Deep as a Dagger!",
                 LocalDate.parse("1942-11-26"),
                 103,
-                new MPAAFilmRating(2, "PG")));
+                new MPAAFilmRating(2L, "PG")));
 
         filmController.create(new Film(
-                2,
+                2L,
                 "Gone with the Wind",
                 "The most magnificent picture ever!",
                 LocalDate.parse("1939-12-15"),
                 222,
-                new MPAAFilmRating(2, "PG")));
+                new MPAAFilmRating(2L, "PG")));
     }
 
     @Test
     void update() {
         filmController.update(
-                new Film(1,
+                new Film(1L,
                         "Home Alone",
                         "They Forgot One Minor Detail: Kevin.",
                         LocalDate.parse("1990-12-10"),
                         103L,
-                        new MPAAFilmRating(1, "PG")));
+                        new MPAAFilmRating(1L, "PG")));
 
-        Optional<Film> filmOptional = filmDbStorage.get(1);
+        Optional<Film> filmOptional = filmDbStorage.get(1L);
 
         assertThat(filmOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
                         assertThat(user)
-                                .hasFieldOrPropertyWithValue("id", 1)
+                                .hasFieldOrPropertyWithValue("id", 1L)
                                 .hasFieldOrPropertyWithValue("name", "Home Alone")
                                 .hasFieldOrPropertyWithValue("description", "They Forgot One Minor Detail: Kevin.")
                                 .hasFieldOrPropertyWithValue("releaseDate", LocalDate.parse("1990-12-10"))
@@ -74,13 +74,13 @@ public class FilmDbTest {
 
     @Test
     void get() {
-        Optional<Film> filmOptional = filmDbStorage.get(1);
+        Optional<Film> filmOptional = filmDbStorage.get(1L);
 
         assertThat(filmOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
                         assertThat(user)
-                                .hasFieldOrPropertyWithValue("id", 1)
+                                .hasFieldOrPropertyWithValue("id", 1L)
                                 .hasFieldOrPropertyWithValue("name", "Casablanca")
                                 .hasFieldOrPropertyWithValue("description", "Where Love Cuts as Deep as a Dagger!")
                                 .hasFieldOrPropertyWithValue("releaseDate", LocalDate.parse("1942-11-26"))

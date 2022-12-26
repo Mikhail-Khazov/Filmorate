@@ -12,19 +12,19 @@ public interface FilmStorage {
 
     int update(Film film);
 
-    Optional<Film> get(int filmId);
+    Optional<Film> get(Long filmId);
 
     List<Film> getAll();
 
     List<Film> getTopFilms(int count, Integer genreId, Integer year);
 
-    MPAAFilmRating getMpaaRating(int filmId);
+    MPAAFilmRating getMpaaRating(Long filmId);
 
-    List<Film> getCommonFilms(int userId, int friendId);
+    List<Film> getCommonFilms(Long userId, Long friendId);
 
-    boolean delete(int filmId);
+    boolean delete(Long filmId);
 
-    List<Film> getSortedFilms(int directorId, String sortBy);
+    List<Film> getSortedFilms(Long directorId, String sortBy);
 
     List<Film> searchFilms(List<String> searchBy, String queriedText);
 }

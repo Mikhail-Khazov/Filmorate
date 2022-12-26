@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.PreparedStatement;
 import java.util.*;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class DirectorDbStorage implements DirectorStorage {
+public class DirectorDbStorage implements DirectorStorage, DirectorMapper {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -28,7 +27,7 @@ public class DirectorDbStorage implements DirectorStorage {
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
-        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         return director;
     }
 
@@ -39,9 +38,9 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Optional<Director> get(int directorId) {
+    public Optional<Director> get(Long directorId) {
         final String sqlQuery = "SELECT DIRECTOR_ID, DIRECTOR_NAME FROM directors WHERE DIRECTOR_ID = ?";
-        final List<Director> directors = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToDirector, directorId);
+        final List<Director> directors = jdbcTemplate.query(sqlQuery, DirectorMapper::map, directorId);
 
         if (directors.isEmpty()) return Optional.empty();
         return directors.stream().findFirst();
@@ -50,11 +49,11 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public List<Director> getAll() {
         final String sqlQuery = "SELECT DIRECTOR_ID, DIRECTOR_NAME FROM directors";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToDirector);
+        return jdbcTemplate.query(sqlQuery, DirectorMapper::map);
     }
 
     @Override
-    public boolean delete(int directorId) {
+    public boolean delete(Long directorId) {
         final String sqlQuery = "DELETE FROM directors WHERE DIRECTOR_ID = ?";
         return jdbcTemplate.update(sqlQuery, directorId) > 0;
     }
@@ -62,7 +61,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public void setDirectors(List<Film> films) {
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
-        final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
+        final Map<Long, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
         if(inSql.isEmpty()) return;
 
         jdbcTemplate.query(
@@ -71,10 +70,10 @@ public class DirectorDbStorage implements DirectorStorage {
                         "LEFT JOIN directors AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
                         "WHERE fd.FILM_ID IN (%s)", inSql),
                 (rs) -> {
-                    final Film film = filmById.get(rs.getInt("FILM_ID"));
+                    final Film film = filmById.get(rs.getLong("FILM_ID"));
 
                     if (null != film.getDirectors()) {
-                        film.addDirector(new Director(rs.getInt("DIRECTOR_ID"), rs.getString("DIRECTOR_NAME")));
+                        film.addDirector(new Director(rs.getLong("DIRECTOR_ID"), rs.getString("DIRECTOR_NAME")));
                     }
                 },
                 films.stream().map(Film::getId).toArray());

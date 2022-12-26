@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,7 +19,7 @@ import java.util.stream.IntStream;
 
 @Repository
 @RequiredArgsConstructor
-public class FilmDbStorage implements FilmStorage {
+public class FilmDbStorage implements FilmStorage, FilmMapper {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -37,10 +36,10 @@ public class FilmDbStorage implements FilmStorage {
             statement.setLong(4, film.getDuration());
             final MPAAFilmRating ratingId = film.getMpa();
             if (null == ratingId) statement.setNull(5, Types.INTEGER);
-            else statement.setInt(5, ratingId.getId());
+            else statement.setLong(5, ratingId.getId());
             return statement;
         }, keyHolder);
-        film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         writeGenreToDB(film);
         writeDirectorToDB(film);
         return film;
@@ -68,12 +67,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> get(int filmId) {
+    public Optional<Film> get(Long filmId) {
         final String sqlQuery = "SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.RATING_ID, r.MPA " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "WHERE FILM_ID = ? ";
-        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, filmId);
+        final List<Film> films = jdbcTemplate.query(sqlQuery, FilmMapper::map, filmId);
         return films.stream().findFirst();
     }
 
@@ -82,10 +81,10 @@ public class FilmDbStorage implements FilmStorage {
         final String sqlQuery = "SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.RATING_ID, r.MPA " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID ";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm);
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map);
     }
 
-    private void deleteAllGenres(int id) {
+    private void deleteAllGenres(Long id) {
         final String sqlQueryDelete = "DELETE FROM film_Genre WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQueryDelete, id);
     }
@@ -98,13 +97,13 @@ public class FilmDbStorage implements FilmStorage {
                 genres,
                 genres.size(),
                 (PreparedStatement ps, FilmGenre genre) -> {
-                    ps.setInt(1, film.getId());
-                    ps.setInt(2, genre.getId());
+                    ps.setLong(1, film.getId());
+                    ps.setLong(2, genre.getId());
                 }
         );
     }
 
-    private void deleteDirectors(int id) {
+    private void deleteDirectors(Long id) {
         final String sqlQueryDelete = "DELETE FROM film_directors WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQueryDelete, id);
     }
@@ -117,19 +116,19 @@ public class FilmDbStorage implements FilmStorage {
                 directors,
                 directors.size(),
                 (PreparedStatement ps, Director director) -> {
-                    ps.setInt(1, film.getId());
-                    ps.setInt(2, director.getId());
+                    ps.setLong(1, film.getId());
+                    ps.setLong(2, director.getId());
                 }
         );
     }
 
-    public MPAAFilmRating getMpaaRating(int filmId) {
+    public MPAAFilmRating getMpaaRating(Long filmId) {
         Film film = get(filmId).orElseThrow();
         return film.getMpa();
     }
 
     @Override
-    public List<Film> getCommonFilms(int userId, int friendId) {
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
         final String sqlQuery = "SELECT f. *, r. * " +
                 "FROM films AS f " +
                 "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
@@ -139,7 +138,7 @@ public class FilmDbStorage implements FilmStorage {
                 "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;";
 
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map, userId, friendId);
     }
 
     public List<Film> getTopFilms(int count, Integer genreId, Integer year) {
@@ -155,18 +154,18 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY f.FILM_ID " +
                 "ORDER BY COUNT(l.USER_ID) DESC " +
                 "LIMIT ? ";
-        if (genreId == null) return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, count);
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, genreId, count);
+        if (genreId == null) return jdbcTemplate.query(sqlQuery, FilmMapper::map, year, count);
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map, year, genreId, count);
     }
 
     @Override
-    public boolean delete(int filmId) {
+    public boolean delete(Long filmId) {
         final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
         return jdbcTemplate.update(sqlQuery, filmId) > 0;
     }
 
     @Override
-    public List<Film> getSortedFilms(int directorId, String sortBy) {
+    public List<Film> getSortedFilms(Long directorId, String sortBy) {
         final String sqlQuery = "SELECT *, COUNT(*) AS likes " +
                 "FROM films AS f " +
                 "JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID " +
@@ -185,8 +184,8 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private List<Film> getFilms(int directorId, String sqlQuery) {
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, directorId);
+    private List<Film> getFilms(Long directorId, String sqlQuery) {
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map, directorId);
     }
 
     private List<Integer> getIndexesOfSearchedFilms(List<String> search, String queriedText) {
@@ -228,9 +227,9 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN mpa AS m ON f.RATING_ID = m.RATING_ID " +
                 "WHERE FILM_ID IN (%s) ", inSql);
 
-        ArrayList<Film> arrayDisorderedFilms = new ArrayList<>(jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, listFilmIndexes.toArray()));
+        ArrayList<Film> arrayDisorderedFilms = new ArrayList<>(jdbcTemplate.query(sqlQuery, FilmMapper::map, listFilmIndexes.toArray()));
         HashMap<Integer, Film> mapIDtoFile = new HashMap<>();
-        IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> mapIDtoFile.put(arrayDisorderedFilms.get(v).getId(), arrayDisorderedFilms.get(v)));
+        IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> mapIDtoFile.put(Math.toIntExact(arrayDisorderedFilms.get(v).getId()), arrayDisorderedFilms.get(v)));
         ArrayList<Film> arrayOrderedFilms = new ArrayList<>();
         IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> arrayOrderedFilms.add(mapIDtoFile.get(arrayFilmIndexes.get(v))));
         return arrayOrderedFilms;
