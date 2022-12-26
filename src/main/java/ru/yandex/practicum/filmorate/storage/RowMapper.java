@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.feed.EventType;
+import ru.yandex.practicum.filmorate.storage.feed.Operation;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,8 +61,8 @@ public class RowMapper {
         return new FeedRow(rs.getInt("EVENT_ID"),
                 rs.getInt("USER_ID"),
                 rs.getInt("ENTITY_ID"),
-                rs.getString("EVENT_TYPE"),
-                rs.getString("OPERATION"),
+                EventType.toEnum(rs.getString("EVENT_TYPE")),
+                Operation.toEnum(rs.getString("OPERATION")),
                 rs.getLong("TIMELONG")
         );
     }

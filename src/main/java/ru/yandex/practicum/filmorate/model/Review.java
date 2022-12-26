@@ -32,4 +32,5 @@ public class Review {
     private Integer filmId;
 
     private int useful;
+
 }

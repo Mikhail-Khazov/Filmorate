@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.util.List;
 

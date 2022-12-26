@@ -1,20 +1,20 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.controllers.FilmController;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
+import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
-import org.junit.jupiter.api.BeforeEach;
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
