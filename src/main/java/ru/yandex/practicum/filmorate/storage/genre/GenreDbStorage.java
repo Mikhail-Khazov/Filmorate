@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.PreparedStatement;
 import java.util.*;
@@ -15,19 +14,19 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class GenreDbStorage implements GenreStorage {
+public class GenreDbStorage implements GenreStorage, GenreMapper {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<FilmGenre> getAll() {
         String sqlQuery = "SELECT * FROM genres";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre);
+        return jdbcTemplate.query(sqlQuery, GenreMapper::map);
     }
 
     @Override
     public Optional<FilmGenre> getById(Long id) {
         String sqlQuery = "SELECT * FROM genres WHERE GENRE_ID = ?";
-        List<FilmGenre> genre = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, id);
+        List<FilmGenre> genre = jdbcTemplate.query(sqlQuery, GenreMapper::map, id);
         return genre.isEmpty() ? Optional.empty() : Optional.of(genre.get(0));
     }
 

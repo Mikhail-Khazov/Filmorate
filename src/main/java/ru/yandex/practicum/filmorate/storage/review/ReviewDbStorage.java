@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ReviewDbStorage implements ReviewStorage {
+public class ReviewDbStorage implements ReviewStorage, ReviewMapper {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -25,7 +24,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
                 "WHERE r.REVIEW_ID = ? " +
                 "GROUP BY r.REVIEW_ID ";
-        final List<Review> review = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, id);
+        final List<Review> review = jdbcTemplate.query(sqlQuery, ReviewMapper::map, id);
         return review.stream().findAny();
     }
 
@@ -73,7 +72,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "GROUP BY r.REVIEW_ID " +
                 "ORDER BY USEFULNESS DESC " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, count);
+        return jdbcTemplate.query(sqlQuery, ReviewMapper::map, count);
     }
 
     @Override
@@ -85,7 +84,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "GROUP BY r.REVIEW_ID " +
                 "ORDER BY USEFULNESS DESC " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToReview, id, count);
+        return jdbcTemplate.query(sqlQuery, ReviewMapper::map, id, count);
     }
 
     @Override

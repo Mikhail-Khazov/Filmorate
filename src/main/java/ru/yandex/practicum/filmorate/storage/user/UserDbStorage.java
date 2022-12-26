@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -19,7 +18,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class UserDbStorage implements UserStorage {
+public class UserDbStorage implements UserStorage, UserMapper {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -56,14 +55,14 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Optional<User> get(Long userId) {
         final String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM users WHERE USER_ID = ?";
-        final List<User> users = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToUser, userId);
+        final List<User> users = jdbcTemplate.query(sqlQuery, UserMapper::map, userId);
         return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
     }
 
     @Override
     public List<User> getAll() {
         final String sqlQuery = "SELECT USER_ID, EMAIL, LOGIN, USER_NAME, BIRTHDAY FROM users";
-        final List<User> users = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToUser);
+        final List<User> users = jdbcTemplate.query(sqlQuery, UserMapper::map);
         if (users.isEmpty()) {
             throw new UserNotFoundException("Записи с пользователями отсутствуют в базе");
         }

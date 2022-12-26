@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.PreparedStatement;
 import java.util.*;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class DirectorDbStorage implements DirectorStorage {
+public class DirectorDbStorage implements DirectorStorage, DirectorMapper {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -41,7 +40,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public Optional<Director> get(Long directorId) {
         final String sqlQuery = "SELECT DIRECTOR_ID, DIRECTOR_NAME FROM directors WHERE DIRECTOR_ID = ?";
-        final List<Director> directors = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToDirector, directorId);
+        final List<Director> directors = jdbcTemplate.query(sqlQuery, DirectorMapper::map, directorId);
 
         if (directors.isEmpty()) return Optional.empty();
         return directors.stream().findFirst();
@@ -50,7 +49,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public List<Director> getAll() {
         final String sqlQuery = "SELECT DIRECTOR_ID, DIRECTOR_NAME FROM directors";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToDirector);
+        return jdbcTemplate.query(sqlQuery, DirectorMapper::map);
     }
 
     @Override

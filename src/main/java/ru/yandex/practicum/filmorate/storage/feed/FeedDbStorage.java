@@ -6,14 +6,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FeedRow;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class FeedDbStorage {
+public class FeedDbStorage implements FeedMapper {
     private final JdbcTemplate jdbcTemplate;
     private final UserService userService;
 
@@ -24,7 +23,7 @@ public class FeedDbStorage {
                 "WHERE feed.USER_ID = ? ";
         log.info("Запрос на получение ленты новостей пользователя id=" + idUser);
         userService.get(idUser);
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFeedRow, idUser);
+        return jdbcTemplate.query(sqlQuery, FeedMapper::map, idUser);
     }
 
     public Long getIdAuthor(Long idReview) {

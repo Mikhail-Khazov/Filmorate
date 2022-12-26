@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.MPAAFilmRating;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,7 +19,7 @@ import java.util.stream.IntStream;
 
 @Repository
 @RequiredArgsConstructor
-public class FilmDbStorage implements FilmStorage {
+public class FilmDbStorage implements FilmStorage, FilmMapper {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -73,7 +72,7 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "WHERE FILM_ID = ? ";
-        final List<Film> films = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, filmId);
+        final List<Film> films = jdbcTemplate.query(sqlQuery, FilmMapper::map, filmId);
         return films.stream().findFirst();
     }
 
@@ -82,7 +81,7 @@ public class FilmDbStorage implements FilmStorage {
         final String sqlQuery = "SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.RATING_ID, r.MPA " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID ";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm);
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map);
     }
 
     private void deleteAllGenres(Long id) {
@@ -139,7 +138,7 @@ public class FilmDbStorage implements FilmStorage {
                 "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
                 "JOIN liked AS l ON f.FILM_ID = l.FILM_ID WHERE L.USER_ID = ? ;";
 
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, userId, friendId);
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map, userId, friendId);
     }
 
     public List<Film> getTopFilms(int count, Integer genreId, Integer year) {
@@ -155,8 +154,8 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY f.FILM_ID " +
                 "ORDER BY COUNT(l.USER_ID) DESC " +
                 "LIMIT ? ";
-        if (genreId == null) return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, count);
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, year, genreId, count);
+        if (genreId == null) return jdbcTemplate.query(sqlQuery, FilmMapper::map, year, count);
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map, year, genreId, count);
     }
 
     @Override
@@ -186,7 +185,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private List<Film> getFilms(Long directorId, String sqlQuery) {
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, directorId);
+        return jdbcTemplate.query(sqlQuery, FilmMapper::map, directorId);
     }
 
     private List<Integer> getIndexesOfSearchedFilms(List<String> search, String queriedText) {
@@ -228,7 +227,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN mpa AS m ON f.RATING_ID = m.RATING_ID " +
                 "WHERE FILM_ID IN (%s) ", inSql);
 
-        ArrayList<Film> arrayDisorderedFilms = new ArrayList<>(jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, listFilmIndexes.toArray()));
+        ArrayList<Film> arrayDisorderedFilms = new ArrayList<>(jdbcTemplate.query(sqlQuery, FilmMapper::map, listFilmIndexes.toArray()));
         HashMap<Integer, Film> mapIDtoFile = new HashMap<>();
         IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> mapIDtoFile.put(Math.toIntExact(arrayDisorderedFilms.get(v).getId()), arrayDisorderedFilms.get(v)));
         ArrayList<Film> arrayOrderedFilms = new ArrayList<>();

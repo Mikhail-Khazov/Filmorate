@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.RowMapper;
+import ru.yandex.practicum.filmorate.storage.user.UserMapper;
 
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class FriendsDbStorage implements FriendsStorage {
+public class FriendsDbStorage implements FriendsStorage, UserMapper {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -32,7 +32,7 @@ public class FriendsDbStorage implements FriendsStorage {
                 "JOIN friends AS u1 ON us.USER_ID = u1.FRIEND_ID " +
                 "JOIN friends AS u2 ON u1.FRIEND_ID = u2.FRIEND_ID " +
                 "WHERE u1.USER_ID = ? AND u2.USER_ID = ?";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToUser, userId, friendId);
+        return jdbcTemplate.query(sqlQuery, UserMapper::map, userId, friendId);
     }
 
     @Override
@@ -41,6 +41,6 @@ public class FriendsDbStorage implements FriendsStorage {
                 "FROM friends AS f " +
                 "LEFT JOIN users AS u ON f.FRIEND_ID = u.USER_ID " +
                 "WHERE f.USER_ID = ? ";
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToUser, userId);
+        return jdbcTemplate.query(sqlQuery, UserMapper::map, userId);
     }
 }
