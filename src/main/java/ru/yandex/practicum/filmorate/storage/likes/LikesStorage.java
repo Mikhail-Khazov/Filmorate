@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.likes;
 
-
 import java.util.List;
 
 public interface LikesStorage {

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 @UtilityClass
 public class RowMapper {
-    public static User mapRowToUser(ResultSet rs, int row) throws SQLException {
+    public static User mapRowToUser(ResultSet rs, long row) throws SQLException {
         return new User(rs.getLong("USER_ID"),
                 rs.getString("EMAIL"),
                 rs.getString("LOGIN"),
@@ -19,7 +19,7 @@ public class RowMapper {
         );
     }
 
-    public static Film mapRowToFilm(ResultSet rs, int row) throws SQLException {
+    public static Film mapRowToFilm(ResultSet rs, long row) throws SQLException {
         return new Film(rs.getLong("FILM_ID"),
                 rs.getString("FILM_NAME"),
                 rs.getString("DESCRIPTION"),
@@ -29,25 +29,25 @@ public class RowMapper {
         );
     }
 
-    public static Director mapRowToDirector(ResultSet rs, int row) throws SQLException {
+    public static Director mapRowToDirector(ResultSet rs, long row) throws SQLException {
         return new Director(rs.getLong("DIRECTOR_ID"),
                 rs.getString("DIRECTOR_NAME")
         );
     }
 
-    public static FilmGenre mapRowToGenre(ResultSet rs, int row) throws SQLException {
+    public static FilmGenre mapRowToGenre(ResultSet rs, long row) throws SQLException {
         return new FilmGenre(rs.getLong("GENRE_ID"),
                 rs.getString("TITLE")
         );
     }
 
-    public static MPAAFilmRating mapRowToMPAAFilmRating(ResultSet rs, int row) throws SQLException {
+    public static MPAAFilmRating mapRowToMPAAFilmRating(ResultSet rs, long row) throws SQLException {
         return new MPAAFilmRating(rs.getLong("RATING_ID"),
                 rs.getString("MPA")
         );
     }
 
-    public static Review mapRowToReview(ResultSet rs, int row) throws SQLException {
+    public static Review mapRowToReview(ResultSet rs, long row) throws SQLException {
         return new Review(rs.getLong("REVIEW_ID"),
                 rs.getString("CONTENT"),
                 rs.getBoolean("IS_POSITIVE"),
@@ -57,7 +57,7 @@ public class RowMapper {
         );
     }
 
-    public static FeedRow mapRowToFeedRow(ResultSet rs, int row) throws SQLException {
+    public static FeedRow mapRowToFeedRow(ResultSet rs, long row) throws SQLException {
         return new FeedRow(rs.getLong("EVENT_ID"),
                 rs.getLong("USER_ID"),
                 rs.getLong("ENTITY_ID"),

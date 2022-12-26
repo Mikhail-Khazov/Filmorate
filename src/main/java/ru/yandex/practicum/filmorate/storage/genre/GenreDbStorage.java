@@ -60,9 +60,4 @@ public class GenreDbStorage implements GenreStorage {
                 },
                 films.stream().map(Film::getId).toArray());
     }
-
-    @Override
-    public List<FilmGenre> getFilmGenres(Long filmId, String sqlQuery) {
-        return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, filmId);
-    }
 }
