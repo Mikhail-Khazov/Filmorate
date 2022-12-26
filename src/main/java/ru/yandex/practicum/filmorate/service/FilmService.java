@@ -28,7 +28,7 @@ public class FilmService {
         else throw new FilmNotFoundException("Фильм с id: " + film.getId() + ", не найден");
     }
 
-    public Film get(int filmId) {
+    public Film get(Long filmId) {
         Film film = filmStorage.get(filmId).orElseThrow(
                 () -> new FilmNotFoundException("Фильм с id: " + filmId + ", не найден")
         );
@@ -52,21 +52,21 @@ public class FilmService {
         return topFilms;
     }
 
-    public MPAAFilmRating getRating(int filmId) {
+    public MPAAFilmRating getRating(Long filmId) {
         return filmStorage.getMpaaRating(filmId);
     }
 
-    public List<Film> getCommonFilms(int userId, int friendId) {
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
     }
 
-    public void delete(int filmId) {
+    public void delete(Long filmId) {
         if (!filmStorage.delete(filmId)) {
             throw new FilmNotFoundException("Фильм с id: " + filmId + ", не найден");
         }
     }
 
-    public List<Film> getSortedFilms(int directorId, String sortBy) {
+    public List<Film> getSortedFilms(Long directorId, String sortBy) {
         List<Film> sortedFilms = filmStorage.getSortedFilms(directorId, sortBy);
         if (sortedFilms.isEmpty()) {
             throw new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден");

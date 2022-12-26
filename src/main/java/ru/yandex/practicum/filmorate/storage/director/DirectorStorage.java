@@ -11,11 +11,11 @@ public interface DirectorStorage {
 
     int update(Director director);
 
-    Optional<Director> get(int directorId);
+    Optional<Director> get(Long directorId);
 
     List<Director> getAll();
 
-    boolean delete(int directorId);
+    boolean delete(Long directorId);
 
     void setDirectors(List<Film> films);
 }

@@ -15,22 +15,22 @@ public class FriendController {
     private final FriendService friendService;
 
     @PutMapping("/{friendId}")
-    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
         friendService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{friendId}")
-    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+    public void deleteFriend(@PathVariable Long id, @PathVariable Long friendId) {
         friendService.deleteFriend(id, friendId);
     }
 
     @GetMapping
-    public List<User> getFriends(@PathVariable int id) {
+    public List<User> getFriends(@PathVariable Long id) {
         return friendService.getFriends(id);
     }
 
     @GetMapping("/common/{otherId}")
-    public List<User> commonFriends(@PathVariable int id, @PathVariable int otherId) {
+    public List<User> commonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return friendService.commonFriends(id, otherId);
     }
 }

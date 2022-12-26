@@ -11,12 +11,12 @@ public class LikeController {
     private final LikeService likeService;
 
     @PutMapping()
-    public void addLike(@PathVariable int id, @PathVariable int userId) {
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         likeService.addLike(id, userId);
     }
 
     @DeleteMapping()
-    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         likeService.deleteLike(id, userId);
     }
 }
