@@ -25,7 +25,7 @@ public class DirectorService {
         else throw new DirectorNotFoundException("Режиссёр с id: " + director.getId() + ", не найден");
     }
 
-    public Director get(int directorId) {
+    public Director get(Long directorId) {
         Director director = directorStorage.get(directorId).orElseThrow(
                 () -> new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден")
         );
@@ -37,7 +37,7 @@ public class DirectorService {
         return directorStorage.getAll();
     }
 
-    public void delete(int directorId) {
+    public void delete(Long directorId) {
         if (!directorStorage.delete(directorId)) {
             throw new DirectorNotFoundException("Режиссёр с id: " + directorId + ", не найден");
         }

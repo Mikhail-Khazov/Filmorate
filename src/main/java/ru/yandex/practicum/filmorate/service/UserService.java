@@ -19,7 +19,7 @@ public class UserService {
     private final LikeService likeService;
     private final FilmService filmService;
 
-    public User get(int userId) {
+    public User get(Long userId) {
         User user = userStorage.get(userId).orElseThrow(
                 () -> new UserNotFoundException("Пользователь с id: " + userId + ", не найден")
         );
@@ -48,21 +48,21 @@ public class UserService {
         }
     }
 
-    public void validateUser(int id) {
+    public void validateUser(Long id) {
         userStorage.get(id).orElseThrow(() -> new UserNotFoundException("Пользователь с id: " + id + ", не найден"));
         log.info("Пользователь с id: {}, есть в базе данных", id);
     }
 
-    public void delete(int userId) {
+    public void delete(Long userId) {
         if (!userStorage.delete(userId)) {
             throw new UserNotFoundException("Пользователь с id: " + userId + ", не найден");
         }
     }
 
-    public List<Film> getRecommendations(int userId) {
-        List<Integer> userLikes = likeService.getListOfLikes(userId);
+    public List<Film> getRecommendations(Long userId) {
+        List<Long> userLikes = likeService.getListOfLikes(userId);
         List<Film> recommendationsFilms = new ArrayList<>();
-        List<Integer> similarFilmsId = new ArrayList<>();
+        List<Long> similarFilmsId = new ArrayList<>();
         User mostSimilarUser = new User();
         List<User> users = getAll();
         users.remove(get(userId));
@@ -70,7 +70,7 @@ public class UserService {
         if (userLikes.size() == 0) return recommendationsFilms;
 
         for (User user : users) {
-            List<Integer> currentUserLikes = likeService.getListOfLikes(user.getId());
+            List<Long> currentUserLikes = likeService.getListOfLikes(user.getId());
             currentUserLikes.retainAll(userLikes);
 
             if (currentUserLikes.size() > similarFilmsId.size()) {
@@ -82,7 +82,7 @@ public class UserService {
         similarFilmsId = likeService.getListOfLikes(mostSimilarUser.getId());
         similarFilmsId.removeAll(userLikes);
 
-        for (int id : similarFilmsId) {
+        for (long id : similarFilmsId) {
             recommendationsFilms.add(filmService.get(id));
         }
         return recommendationsFilms;

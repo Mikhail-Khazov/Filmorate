@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.FeedRow;
 import ru.yandex.practicum.filmorate.service.FeedService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class FeedController {
     private final FeedService feedService;
 
     @GetMapping()
-    List<FeedRow> getByUserId(@PathVariable Integer id) {
+    List<FeedRow> getByUserId(@PathVariable Long id) {
         return feedService.getByUserId(id);
     }
 }

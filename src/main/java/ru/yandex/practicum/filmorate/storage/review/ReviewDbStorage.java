@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Optional<Review> getById(int id) {
+    public Optional<Review> getById(Long id) {
         final String sqlQuery = "SELECT r. *, SUM(u.USEFUL) AS USEFULNESS " +
                 "FROM reviews AS r " +
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
@@ -38,11 +37,11 @@ public class ReviewDbStorage implements ReviewStorage {
             PreparedStatement statement = connection.prepareStatement(sqlQuery, new String[]{"REVIEW_ID"});
             statement.setString(1, review.getContent());
             statement.setBoolean(2, review.getIsPositive());
-            statement.setInt(3, review.getUserId());
-            statement.setInt(4, review.getFilmId());
+            statement.setLong(3, review.getUserId());
+            statement.setLong(4, review.getFilmId());
             return statement;
         }, keyHolder);
-        review.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        review.setReviewId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         return review;
     }
 
@@ -61,7 +60,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(Long id) {
         final String sqlQuery = "DELETE FROM reviews WHERE REVIEW_ID = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;
     }
@@ -78,7 +77,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public List<Review> getFilmReviews(int id, int count) {
+    public List<Review> getFilmReviews(Long id, int count) {
         final String sqlQuery = "SELECT r. *, IFNULL(SUM(u.USEFUL), 0) AS USEFULNESS " +
                 "FROM reviews AS r " +
                 "LEFT JOIN useful AS u ON r.REVIEW_ID = u.REVIEW_ID " +
@@ -90,19 +89,19 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void addLike(int id, int userId) {
+    public void addLike(Long id, Long userId) {
         final String sqlQuery = "INSERT INTO useful (REVIEW_ID, USER_ID, USEFUL) values (?, ?, 1)";
         jdbcTemplate.update(sqlQuery, id, userId);
     }
 
     @Override
-    public void addDislike(int id, int userId) {
+    public void addDislike(Long id, Long userId) {
         final String sqlQuery = "INSERT INTO useful (REVIEW_ID, USER_ID, USEFUL) values (?, ?, -1)";
         jdbcTemplate.update(sqlQuery, id, userId);
     }
 
     @Override
-    public void removeLike(int id, int userId) {
+    public void removeLike(Long id, Long userId) {
         final String sqlQuery = "DELETE FROM useful WHERE (REVIEW_ID = ?, USER_ID = ?) ";
         jdbcTemplate.update(sqlQuery, id, userId);
     }

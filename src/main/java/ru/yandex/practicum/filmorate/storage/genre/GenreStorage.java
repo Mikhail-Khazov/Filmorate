@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface GenreStorage {
     List<FilmGenre> getAll();
 
-    Optional<FilmGenre> getById(int id);
+    Optional<FilmGenre> getById(Long id);
 
     FilmGenre create(FilmGenre genre);
 
     void setGenres(List<Film> films);
 
-    List<FilmGenre> getFilmGenres(int filmId, String sqlQuery);
+    List<FilmGenre> getFilmGenres(Long filmId, String sqlQuery);
 }

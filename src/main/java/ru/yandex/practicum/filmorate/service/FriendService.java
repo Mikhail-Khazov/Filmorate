@@ -15,28 +15,27 @@ public class FriendService {
     private final FriendsStorage friendsStorage;
     private final UserService userService;
 
-    public void addFriend(int userId, int friendId) {
+    public void addFriend(Long userId, Long friendId) {
         userService.validateUser(userId);
         userService.validateUser(friendId);
         friendsStorage.addFriend(userId, friendId);
     }
 
-    public void deleteFriend(int userId, int friendId) {
+    public void deleteFriend(Long userId, Long friendId) {
         userService.validateUser(userId);
         userService.validateUser(friendId);
         friendsStorage.deleteFriend(userId, friendId);
     }
 
-    public List<User> getFriends(int userId) {
+    public List<User> getFriends(Long userId) {
         userService.validateUser(userId);
         return friendsStorage.getFriends(userId);
     }
 
-    public List<User> commonFriends(int userId, int friendId) {
+    public List<User> commonFriends(Long userId, Long friendId) {
         userService.validateUser(userId);
         userService.validateUser(friendId);
         log.info("Получен список общих друзей пользователя id: {}, и пользователя id: {}", userId, friendId);
-        List<User> commonFr = friendsStorage.commonFriends(userId, friendId);
-        return commonFr;
+        return friendsStorage.commonFriends(userId, friendId);
     }
 }

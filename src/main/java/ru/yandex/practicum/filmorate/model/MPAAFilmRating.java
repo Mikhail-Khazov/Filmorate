@@ -9,7 +9,6 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class MPAAFilmRating {
 
-    private final int id;
+    private final Long id;
     private final String name;
-
 }

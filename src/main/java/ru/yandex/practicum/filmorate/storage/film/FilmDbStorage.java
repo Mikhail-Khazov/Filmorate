@@ -37,10 +37,10 @@ public class FilmDbStorage implements FilmStorage {
             statement.setLong(4, film.getDuration());
             final MPAAFilmRating ratingId = film.getMpa();
             if (null == ratingId) statement.setNull(5, Types.INTEGER);
-            else statement.setInt(5, ratingId.getId());
+            else statement.setLong(5, ratingId.getId());
             return statement;
         }, keyHolder);
-        film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         writeGenreToDB(film);
         writeDirectorToDB(film);
         return film;
@@ -68,7 +68,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> get(int filmId) {
+    public Optional<Film> get(Long filmId) {
         final String sqlQuery = "SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, f.RATING_ID, r.MPA " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
@@ -85,7 +85,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm);
     }
 
-    private void deleteAllGenres(int id) {
+    private void deleteAllGenres(Long id) {
         final String sqlQueryDelete = "DELETE FROM film_Genre WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQueryDelete, id);
     }
@@ -98,13 +98,13 @@ public class FilmDbStorage implements FilmStorage {
                 genres,
                 genres.size(),
                 (PreparedStatement ps, FilmGenre genre) -> {
-                    ps.setInt(1, film.getId());
-                    ps.setInt(2, genre.getId());
+                    ps.setLong(1, film.getId());
+                    ps.setLong(2, genre.getId());
                 }
         );
     }
 
-    private void deleteDirectors(int id) {
+    private void deleteDirectors(Long id) {
         final String sqlQueryDelete = "DELETE FROM film_directors WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQueryDelete, id);
     }
@@ -117,19 +117,19 @@ public class FilmDbStorage implements FilmStorage {
                 directors,
                 directors.size(),
                 (PreparedStatement ps, Director director) -> {
-                    ps.setInt(1, film.getId());
-                    ps.setInt(2, director.getId());
+                    ps.setLong(1, film.getId());
+                    ps.setLong(2, director.getId());
                 }
         );
     }
 
-    public MPAAFilmRating getMpaaRating(int filmId) {
+    public MPAAFilmRating getMpaaRating(Long filmId) {
         Film film = get(filmId).orElseThrow();
         return film.getMpa();
     }
 
     @Override
-    public List<Film> getCommonFilms(int userId, int friendId) {
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
         final String sqlQuery = "SELECT f. *, r. * " +
                 "FROM films AS f " +
                 "JOIN mpa AS r ON f.RATING_ID = r.RATING_ID " +
@@ -160,13 +160,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public boolean delete(int filmId) {
+    public boolean delete(Long filmId) {
         final String sqlQuery = "DELETE FROM films WHERE FILM_ID = ?";
         return jdbcTemplate.update(sqlQuery, filmId) > 0;
     }
 
     @Override
-    public List<Film> getSortedFilms(int directorId, String sortBy) {
+    public List<Film> getSortedFilms(Long directorId, String sortBy) {
         final String sqlQuery = "SELECT *, COUNT(*) AS likes " +
                 "FROM films AS f " +
                 "JOIN film_directors AS fd ON f.FILM_ID = fd.FILM_ID " +
@@ -185,7 +185,7 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private List<Film> getFilms(int directorId, String sqlQuery) {
+    private List<Film> getFilms(Long directorId, String sqlQuery) {
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, directorId);
     }
 
@@ -230,7 +230,7 @@ public class FilmDbStorage implements FilmStorage {
 
         ArrayList<Film> arrayDisorderedFilms = new ArrayList<>(jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFilm, listFilmIndexes.toArray()));
         HashMap<Integer, Film> mapIDtoFile = new HashMap<>();
-        IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> mapIDtoFile.put(arrayDisorderedFilms.get(v).getId(), arrayDisorderedFilms.get(v)));
+        IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> mapIDtoFile.put(Math.toIntExact(arrayDisorderedFilms.get(v).getId()), arrayDisorderedFilms.get(v)));
         ArrayList<Film> arrayOrderedFilms = new ArrayList<>();
         IntStream.range(0, arrayDisorderedFilms.size()).forEach(v -> arrayOrderedFilms.add(mapIDtoFile.get(arrayFilmIndexes.get(v))));
         return arrayOrderedFilms;

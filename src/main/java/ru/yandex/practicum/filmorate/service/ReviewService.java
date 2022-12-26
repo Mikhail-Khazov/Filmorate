@@ -18,14 +18,13 @@ public class ReviewService {
     private final UserService userService;
     private final FilmService filmService;
 
-    public Review getById(int id) {
+    public Review getById(Long id) {
         return reviewStorage.getById(id).orElseThrow(
                 () -> new ReviewNotFoundException("Отзыв с id: " + id + ", не найден")
         );
     }
 
     public Review create(Review review) {
-        //TODO
         validationReview(review);
         return reviewStorage.create(review);
     }
@@ -36,26 +35,26 @@ public class ReviewService {
         );
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         if (!reviewStorage.delete(id)) {
             throw new ReviewNotFoundException("Отзыв с id: " + id + ", не найден");
         }
     }
 
-    public List<Review> getAll(int id, int count) {
+    public List<Review> getAll(Long id, int count) {
         if (id == 0) return reviewStorage.getAll(count);
         else return reviewStorage.getFilmReviews(id, count);
     }
 
-    public void addLike(int id, int userId) {
+    public void addLike(Long id, Long userId) {
         reviewStorage.addLike(id, userId);
     }
 
-    public void addDislike(int id, int userId) {
+    public void addDislike(Long id, Long userId) {
         reviewStorage.addDislike(id, userId);
     }
 
-    public void removeLike(int id, int userId) {
+    public void removeLike(Long id, Long userId) {
         reviewStorage.removeLike(id, userId);
     }
 

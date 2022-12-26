@@ -18,7 +18,7 @@ public class FeedDbStorage {
     private final UserService userService;
 
     //Данные ленты новостей для одного пользователя
-    public List<FeedRow> getByUserId(int idUser) {
+    public List<FeedRow> getByUserId(Long idUser) {
         final String sqlQuery = "SELECT * " +
                 "FROM feed " +
                 "WHERE feed.USER_ID = ? ";
@@ -27,10 +27,10 @@ public class FeedDbStorage {
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToFeedRow, idUser);
     }
 
-    public int getIdAuthor(int idReview) {
+    public Long getIdAuthor(Long idReview) {
         final String sqlQuery = "SELECT USER_ID " +
                 "FROM feed " +
                 "WHERE EVENT_TYPE = 'REVIEW' AND OPERATION = 'ADD' AND ENTITY_ID = ? ";
-        return jdbcTemplate.queryForObject(sqlQuery, Integer.class, idReview);
+        return jdbcTemplate.queryForObject(sqlQuery, Long.class, idReview);
     }
 }

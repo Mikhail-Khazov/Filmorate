@@ -25,7 +25,7 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public Optional<FilmGenre> getById(int id) {
+    public Optional<FilmGenre> getById(Long id) {
         String sqlQuery = "SELECT * FROM genres WHERE GENRE_ID = ?";
         List<FilmGenre> genre = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, id);
         return genre.isEmpty() ? Optional.empty() : Optional.of(genre.get(0));
@@ -40,14 +40,14 @@ public class GenreDbStorage implements GenreStorage {
             statement.setString(1, genre.getName());
             return statement;
         }, keyHolder);
-        genre.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        genre.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         return genre;
     }
 
     @Override
     public void setGenres(List<Film> films) {
         final String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
-        final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
+        final Map<Long, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, (f) -> f));
         if(inSql.isEmpty()) return;
         jdbcTemplate.query(
                 String.format("SELECT fg.FILM_ID, fg.GENRE_ID, gn.TITLE " +
@@ -55,14 +55,14 @@ public class GenreDbStorage implements GenreStorage {
                         "LEFT JOIN genres AS gn ON fg.GENRE_ID = gn.GENRE_ID " +
                         "WHERE fg.FILM_ID IN (%s)", inSql),
                 (rs) -> {
-                    final Film film = filmById.get(rs.getInt("FILM_ID"));
-                    film.addGenre(new FilmGenre(rs.getInt("GENRE_ID"), rs.getString("TITLE")));
+                    final Film film = filmById.get(rs.getLong("FILM_ID"));
+                    film.addGenre(new FilmGenre(rs.getLong("GENRE_ID"), rs.getString("TITLE")));
                 },
                 films.stream().map(Film::getId).toArray());
     }
 
     @Override
-    public List<FilmGenre> getFilmGenres(int filmId, String sqlQuery) {
+    public List<FilmGenre> getFilmGenres(Long filmId, String sqlQuery) {
         return jdbcTemplate.query(sqlQuery, RowMapper::mapRowToGenre, filmId);
     }
 }

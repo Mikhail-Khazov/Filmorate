@@ -21,7 +21,7 @@ public class MPAARatingDbStorage implements MPAARatingStorage {
     }
 
     @Override
-    public Optional<MPAAFilmRating> getById(int id) {
+    public Optional<MPAAFilmRating> getById(Long id) {
         String sqlQuery = "SELECT * FROM mpa WHERE RATING_ID = ?";
         List<MPAAFilmRating> mpa = jdbcTemplate.query(sqlQuery, RowMapper::mapRowToMPAAFilmRating, id);
         return mpa.isEmpty() ? Optional.empty() : Optional.of(mpa.get(0));
