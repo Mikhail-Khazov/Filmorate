@@ -9,7 +9,7 @@ import lombok.*;
 @EqualsAndHashCode(of = "id")
 public class FilmGenre {
 
-    private int id;
+    private Long id;
     private String name;
 
     public FilmGenre(String name) {

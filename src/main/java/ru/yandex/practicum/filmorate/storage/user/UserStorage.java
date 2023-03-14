@@ -11,8 +11,9 @@ public interface UserStorage {
 
     int update(User user);
 
-    Optional<User> get(int userId);
+    Optional<User> get(Long userId);
 
     List<User> getAll();
 
+    boolean delete(Long userId);
 }

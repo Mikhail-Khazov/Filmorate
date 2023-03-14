@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.validators;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-
 import java.time.LocalDate;
 
 public class AfterValidator implements ConstraintValidator<After, LocalDate> {
@@ -22,4 +21,3 @@ public class AfterValidator implements ConstraintValidator<After, LocalDate> {
         return valid;
     }
 }
-

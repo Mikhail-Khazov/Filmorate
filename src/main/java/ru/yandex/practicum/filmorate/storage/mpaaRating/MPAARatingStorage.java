@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface MPAARatingStorage {
     List<MPAAFilmRating> getAll();
 
-    Optional<MPAAFilmRating> getById(int id);
+    Optional<MPAAFilmRating> getById(Long id);
 }

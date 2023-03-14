@@ -22,7 +22,7 @@ public class MPAARatingController {
     }
 
     @GetMapping("/{id}")
-    public MPAAFilmRating getById(@PathVariable int id) {
+    public MPAAFilmRating getById(@PathVariable Long id) {
         return mpaaRatingService.getById(id);
     }
 }

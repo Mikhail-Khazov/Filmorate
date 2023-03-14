@@ -20,7 +20,7 @@ public class GenreService {
         return genreStorage.getAll();
     }
 
-    public FilmGenre getById(int genreId) {
+    public FilmGenre getById(Long genreId) {
         FilmGenre genre = genreStorage.getById(genreId).orElseThrow(
                 () -> new GenreNotFoundException("Жанр с id: " + genreId + " не найден")
         );
