@@ -7,15 +7,15 @@
 Функциональность «Популярные фильмы» предлагает вывод самых любимых у зрителей фильмов по жанрам и годам.
 
 Применяемы технологии:
-Java 11
-Spring Boot
-JDBC
-PostgreSQL
-Maven
-Lombok
-Junit5
-Postman
-REST
+- Java 11
+- Spring Boot
+- JDBC
+- PostgreSQL
+- Maven
+- Lombok
+- Junit5
+- Postman
+- REST
 
 ### Структура проекта Filmorate:
 ![image](https://user-images.githubusercontent.com/92729800/209476346-e43713bc-7ae3-43a9-8346-6ee26aab4d2b.png)
